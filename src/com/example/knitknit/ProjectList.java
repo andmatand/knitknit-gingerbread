@@ -55,6 +55,8 @@ public class ProjectList extends ListActivity {
 
 		setContentView(R.layout.projectlist);
 
+		//Log.w("spam", "set content view");
+
 		// Fill the list with the projects from the database
 		fillList();
 	}

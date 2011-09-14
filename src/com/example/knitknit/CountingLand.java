@@ -25,9 +25,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.android.demo.notepad3;
+package com.example.knitknit;
 
 import android.app.Activity;
+import android.os.Bundle;
 
 public class CountingLand extends Activity {
 	private DatabaseHelper mDatabaseHelper;
@@ -39,6 +40,6 @@ public class CountingLand extends Activity {
 		mDatabaseHelper = new DatabaseHelper(this);
 		mDatabaseHelper.open();
 
-		setContentView(R.layout.counter);
+		setContentView(R.layout.countingland);
 	}
 }

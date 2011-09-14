@@ -51,7 +51,7 @@ public class DatabaseHelper {
 	private static final String COUNTER_TABLE = "counters";
 	private static final String NOTE_TABLE = "notes";
 
-	private DatabaseOpenHelper mDBHelper;
+	private DatabaseOpenHelper mOpenHelper;
 	private SQLiteDatabase mDB;
 	private Context mCtx;
 
@@ -112,13 +112,13 @@ public class DatabaseHelper {
 		// Open the notes database.  If it cannot be opened, try to
 		// create a new instance of the database.  If it cannot be
 		// created, throw an exception to signal the failure
-		mDBHelper = new DatabaseOpenHelper(mCtx);
-		mDB = mDBHelper.getWritableDatabase();
+		mOpenHelper = new DatabaseOpenHelper(mCtx);
+		mDB = mOpenHelper.getWritableDatabase();
 		return this;
 	}
 
 	public void close() {
-		mDBHelper.close();
+		mOpenHelper.close();
 	}
 
 	// Projects
