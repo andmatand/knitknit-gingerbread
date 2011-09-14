@@ -1,3 +1,30 @@
+/*
+ * Copyright 2011 Andrew Anderson
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 	-Redistributions of source code must retain the above copyright notice,
+ * 	 this list of conditions and the following disclaimer.
+ * 
+ * 	-Redistributions in binary form must reproduce the above copyright
+ * 	 notice, this list of conditions and the following disclaimer in the
+ * 	 documentation and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.example.knitknit;
 
 import android.app.AlertDialog;
@@ -15,7 +42,7 @@ import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 
 public class ProjectList extends ListActivity {
-	private DBAdapter mDBAdapter;
+	private DatabaseHelper mDatabaseHelper;
 	private static final int ADD_ID = Menu.FIRST;
 
 	@Override
@@ -23,8 +50,8 @@ public class ProjectList extends ListActivity {
 		super.onCreate(savedInstanceState);
 
 		// Open database
-		mDBAdapter = new DBAdapter(this);
-		mDBAdapter.open();
+		mDatabaseHelper = new DatabaseHelper(this);
+		mDatabaseHelper.open();
 
 		setContentView(R.layout.projectlist);
 
@@ -34,13 +61,13 @@ public class ProjectList extends ListActivity {
 
 	private void fillList() {
 		// Get a cursor over a list of all projects
-		Cursor cursor = mDBAdapter.selectAllProjects();
+		Cursor cursor = mDatabaseHelper.selectAllProjects();
 		startManagingCursor(cursor);
 
 		// Create an array to specify the fields we want to display in
 		// the list
 		String[] from = new String[] {
-			DBAdapter.PROJECT_KEY_NAME};
+			DatabaseHelper.PROJECT_KEY_NAME};
 
 		// Create and an array of the fields we want to bind those
 		// fields to
@@ -69,14 +96,14 @@ public class ProjectList extends ListActivity {
 	public boolean onMenuItemSelected(int featureID, MenuItem item) {
 		switch(item.getItemId()) {
 		case ADD_ID:
-			createProject(this);
+			createProject();
 			return true;
 		}
 
 		return super.onMenuItemSelected(featureID, item);
 	}
 
-	private void createProject(Context context) {
+	private void createProject() {
 		// Instantiate a view of projectlist_namedialog.xml
 		LayoutInflater inflater = (LayoutInflater)
 			this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -90,7 +117,7 @@ public class ProjectList extends ListActivity {
 		DialogInterface.OnClickListener listener =
 			new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				mDBAdapter.insertProject(
+				mDatabaseHelper.insertProject(
 					name.getText().toString());
 				fillList();
 				return;
