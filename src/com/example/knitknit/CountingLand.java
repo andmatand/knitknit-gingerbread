@@ -28,12 +28,17 @@
 package com.example.knitknit;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 public class CountingLand extends Activity {
+	private Long mProjectID;
 	private DatabaseHelper mDatabaseHelper;
 
 	public void onCreate(Bundle savedInstanceState) {
+		Log.w("bunny-countingland", "in onCreate");
+
 		super.onCreate(savedInstanceState);
 
 		// Open database
@@ -41,5 +46,42 @@ public class CountingLand extends Activity {
 		mDatabaseHelper.open();
 
 		setContentView(R.layout.countingland);
+
+		// Get the projectID from savedInstanceState
+		mProjectID = (savedInstanceState == null ?
+			null :
+			(Long) savedInstanceState.getSerializable(
+				DatabaseHelper.PROJECT_KEY_ID));
+
+		// Fill the onscreen objects with data
+		fillData();
+
+		finish();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		saveState();
+		outState.putSerializable(DatabaseHelper.PROJECT_KEY_ID,
+			mProjectID);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		saveState();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		fillData();
+	}
+
+	private void saveState() {
+	}
+
+	private void fillData() {
 	}
 }

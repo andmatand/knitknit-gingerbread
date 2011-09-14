@@ -30,6 +30,7 @@ package com.example.knitknit;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -39,9 +40,12 @@ import android.view.MenuItem;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class ProjectList extends ListActivity {
+	private static final int ACTIVITY_VIEW = 1;
+
 	private DatabaseHelper mDatabaseHelper;
 	private static final int ADD_ID = Menu.FIRST;
 
@@ -54,8 +58,6 @@ public class ProjectList extends ListActivity {
 		mDatabaseHelper.open();
 
 		setContentView(R.layout.projectlist);
-
-		//Log.w("spam", "set content view");
 
 		// Fill the list with the projects from the database
 		fillList();
@@ -141,5 +143,27 @@ public class ProjectList extends ListActivity {
 
 		// Show the dialog
 		nameDialog.show();
+	}
+	
+	@Override
+	protected void onListItemClick(ListView l, View v, int position,
+		long id)
+	{
+		super.onListItemClick(l, v, position, id);
+
+		Intent i = new Intent(this, CountingLand.class);
+		i.putExtra(DatabaseHelper.PROJECT_KEY_ID, id);
+
+		Log.w("bunny-ProjectList", "ID stored");
+
+		startActivityForResult(i, ACTIVITY_VIEW);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+		Intent intent)
+	{
+		super.onActivityResult(requestCode, resultCode, intent);
+		fillList();
 	}
 }
