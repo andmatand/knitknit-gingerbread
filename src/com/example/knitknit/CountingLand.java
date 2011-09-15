@@ -31,13 +31,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
+import java.util.List;
+import java.util.ArrayList;
 
 public class CountingLand extends Activity {
+	private static final String TAG = "bunny-knitknit-CountingLand";
 	private Long mProjectID;
 	private DatabaseHelper mDatabaseHelper;
+	private TextView counter1;
+	private List<Counter> counters;
 
-	public void onCreate(Bundle savedInstanceState) {
-		Log.w("bunny-countingland", "in onCreate");
+	private class Counter {
+		private TextView textView;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		Log.w(TAG, "in onCreate");
 
 		super.onCreate(savedInstanceState);
 
@@ -56,11 +67,12 @@ public class CountingLand extends Activity {
 		// Fill the onscreen objects with data
 		fillData();
 
-		finish();
+		//finish();
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
+		Log.w("bunny-CountingLand", "in onSaveInstanceState");
 		super.onSaveInstanceState(outState);
 		saveState();
 		outState.putSerializable(DatabaseHelper.PROJECT_KEY_ID,
@@ -75,6 +87,7 @@ public class CountingLand extends Activity {
 
 	@Override
 	protected void onResume() {
+		Log.w(TAG, "in onResume");
 		super.onResume();
 		fillData();
 	}
@@ -83,5 +96,23 @@ public class CountingLand extends Activity {
 	}
 
 	private void fillData() {
+		/*
+		Cursor  = mDbHelper.fetchNote(mRowId);
+		startManagingCursor(note);
+		mTitleText.setText(note.getString(
+			note.getColumnIndexOrThrow(
+			NotesDbAdapter.KEY_TITLE)));
+		mBodyText.setText(note.getString(
+			note.getColumnIndexOrThrow(
+			NotesDbAdapter.KEY_BODY)));
+		*/
+
+		counters = new ArrayList<Counter>();
+
+		//for ( )
+		counter1 = (TextView)
+			this.findViewById(R.id.countingland_counter1);
+
+		//counter1.setText(value);
 	}
 }

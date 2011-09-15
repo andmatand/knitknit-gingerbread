@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">knitknit</string>
+    <string name="app_name">knit knit</string>
 
     <!-- ProjectList -->
     <string name="projectlist_vacant">Press menu to add a new project</string>
@@ -8,5 +8,8 @@
     <string name="projectlist_namedialog_title">New Project</string>
     <string name="projectlist_namedialog_hint">Name</string>
     <string name="projectlist_namedialog_create">Create</string>
+
+    <!-- CountingLand -->
+    <string name="countingland_title">counting land</string>
 
 </resources>

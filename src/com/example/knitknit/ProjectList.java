@@ -53,14 +53,16 @@ public class ProjectList extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		setContentView(R.layout.projectlist);
+
 		// Open database
 		mDatabaseHelper = new DatabaseHelper(this);
 		mDatabaseHelper.open();
 
-		setContentView(R.layout.projectlist);
-
 		// Fill the list with the projects from the database
 		fillList();
+
+		registerForContextMenu(getListView());
 	}
 
 	private void fillList() {

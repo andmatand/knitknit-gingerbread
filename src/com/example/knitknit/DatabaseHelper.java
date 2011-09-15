@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DatabaseHelper {
-	private static final String TAG = "knitknitDatabaseHelper";
+	private static final String TAG = "bunny-knitknit-DatabaseHelper";
 	private static final String DATABASE_NAME = "knitknit.db";
 	private static final int DATABASE_VERSION = 1;
 
@@ -49,11 +49,18 @@ public class DatabaseHelper {
 	public static final String PROJECT_KEY_DATE_ACCESSED = "dateAccessed";
 
 	private static final String COUNTER_TABLE = "counters";
+	public static final String COUNTER_KEY_ID = "_id";
+	public static final String COUNTER_KEY_PROJECT_ID = "projects_id";
+	public static final String COUNTER_KEY_NAME = "name";
+	public static final String COUNTER_KEY_VALUE = "value";
+
 	private static final String NOTE_TABLE = "notes";
 
 	private DatabaseOpenHelper mOpenHelper;
 	private SQLiteDatabase mDB;
 	private Context mCtx;
+
+	private Cursor mCounterCursor;
 
 	private static class DatabaseOpenHelper extends SQLiteOpenHelper {
 		DatabaseOpenHelper(Context context) {
@@ -62,10 +69,15 @@ public class DatabaseHelper {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
+			// Drop all tables
+			//db.execSQL("DROP TABLE IF EXISTS " + PROJECT_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + COUNTER_TABLE);
+			//db.execSQL("DROP TABLE IF EXISTS " + NOTE_TABLE);
+
 			// Create projects table
 			db.execSQL(
 				"create table " + PROJECT_TABLE +
-				"(_id integer primary key autoincrement, " +
+				"(_id int primary key autoincrement, " +
 				PROJECT_KEY_NAME + " tinytext not null, " +
 				PROJECT_KEY_DATE_CREATED + " datetime " +
 					"not null," +
@@ -74,13 +86,13 @@ public class DatabaseHelper {
 			// Create counters table
 			db.execSQL(
 				"create table " + COUNTER_TABLE +
-				"(_id integer primary key autoincrement, " +
-				"project_id int not null, " +
+				"(_id int primary key autoincrement, " +
+				COUNTER_KEY_PROJECT_ID + " int not null, " +
 				"showNotes bool not null, " +
-				"name tinytext not null, " +
+				COUNTER_KEY_NAME + " tinytext not null, " +
 				"state int not null, " +
 				"countUp bool not null, " +
-				"value int not null, " +
+				COUNTER_KEY_VALUE + " int default 0, " +
 				"patternRepeat bool not null, " +
 				"patternLength int not null, " +
 				"targetEnabled bool not null, " +
@@ -98,7 +110,7 @@ public class DatabaseHelper {
 				version " + oldVersion + " to " + newVersion +
 				", which will destroy all old data");
 			*/
-			db.execSQL("DROP TABLE IF EXISTS notes");
+			//db.execSQL("DROP TABLE IF EXISTS notes");
 			onCreate(db);
 		}
 	}
@@ -123,26 +135,63 @@ public class DatabaseHelper {
 
 	// Projects
 	public long insertProject(String name) {
-		Log.w(TAG, "cretateProject '" + name + "'");
-
 		// Get current date
 		SimpleDateFormat dateFormat =
 			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-		//Date date = new Date();
 
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(PROJECT_KEY_NAME, name);
-		initialValues.put(PROJECT_KEY_DATE_CREATED,
+		ContentValues projectValues = new ContentValues();
+		projectValues.put(PROJECT_KEY_NAME, name);
+		projectValues.put(PROJECT_KEY_DATE_CREATED,
 			dateFormat.format(new Date()));
 
-		return mDB.insert(PROJECT_TABLE, null, initialValues);
+		long projectID = mDB.insert(PROJECT_TABLE, null, projectValues);
+
+		// Exit if there was a database error
+		if (projectID == -1) {
+			return -1;
+		} else {
+			// Insert 1 counter to start
+			insertCounter(projectID);
+
+			return projectID;
+		}
+	}
+
+	public long insertCounter(long projectID) {
+		ContentValues counterValues = new ContentValues();
+		counterValues.put(COUNTER_KEY_PROJECT_ID, projectID);
+
+		return mDB.insert(COUNTER_TABLE, null, counterValues);
 	}
 
 	public Cursor selectAllProjects() {
-		// Returns a Cursor over the list of all notes in the database
+		// Returns a Cursor over the list of all projects in the
+		// database
 		return mDB.query(
 			PROJECT_TABLE,
 			new String[] {PROJECT_KEY_ID, PROJECT_KEY_NAME},
 			null, null, null, null, null);
+	}
+
+	public Cursor fetchCounters(long projectID) throws SQLException {
+		if (mCounterCursor == null) {
+			Cursor mCounterCursor =
+				mDB.query(true,
+					COUNTER_TABLE,
+					new String[] {
+						COUNTER_KEY_ID,
+						COUNTER_KEY_NAME,
+						COUNTER_KEY_VALUE},
+					COUNTER_KEY_PROJECT_ID + "=" +
+						projectID,
+					null, null, null, null, null);
+			if (mCounterCursor != null) {
+				mCounterCursor.moveToFirst();
+			}
+		} else {
+			mCounterCursor.moveToNext();
+		}
+
+		return mCounterCursor;
 	}
 }
