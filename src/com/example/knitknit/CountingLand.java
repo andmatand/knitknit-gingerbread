@@ -29,6 +29,7 @@ package com.example.knitknit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -39,17 +40,18 @@ public class CountingLand extends Activity {
 	private static final String TAG = "bunny-knitknit-CountingLand";
 	private Long mProjectID;
 	private DatabaseHelper mDatabaseHelper;
-	private TextView counter1;
-	private List<Counter> counters;
+	private TextView mCounter1;
+	private List<Counter> mCounters;
 
 	private class Counter {
 		private TextView textView;
+
+		protected void onCreate() {
+		}
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.w(TAG, "in onCreate");
-
 		super.onCreate(savedInstanceState);
 
 		// Open database
@@ -58,16 +60,31 @@ public class CountingLand extends Activity {
 
 		setContentView(R.layout.countingland);
 
-		// Get the projectID from savedInstanceState
+		// Get projectID from savedInstanceState
 		mProjectID = (savedInstanceState == null ?
 			null :
 			(Long) savedInstanceState.getSerializable(
 				DatabaseHelper.PROJECT_KEY_ID));
 
+		// If we still don't have projectID, get it from intent extras
+		if (mProjectID == null) {
+			Bundle extras = getIntent().getExtras();
+			mProjectID = (extras != null ?
+				extras.getLong(DatabaseHelper.PROJECT_KEY_ID) :
+				null);
+		}
+
+		// If projectID is still null, there is a problem and we need
+		// to get out of here since we can't do anything
+		if (mProjectID == null) {
+			finish();
+		}
+
+		Log.w(TAG, "in onCreate, mProjectID: " + mProjectID);
+
 		// Fill the onscreen objects with data
 		fillData();
 
-		//finish();
 	}
 
 	@Override
@@ -96,23 +113,37 @@ public class CountingLand extends Activity {
 	}
 
 	private void fillData() {
+		Cursor counterCursor =
+			mDatabaseHelper.fetchCounters(mProjectID);
 		/*
-		Cursor  = mDbHelper.fetchNote(mRowId);
-		startManagingCursor(note);
-		mTitleText.setText(note.getString(
-			note.getColumnIndexOrThrow(
-			NotesDbAdapter.KEY_TITLE)));
+		do {
+
+		} while (counterCursor.moveToNext());
+		*/
+		int value = counterCursor.getInt(
+			counterCursor.getColumnIndexOrThrow(
+				DatabaseHelper.COUNTER_KEY_VALUE));
+
+		counterCursor.close();
+		Log.w(TAG, "Got value from cursor");
+		/*
+		startManagingCursor(counters);
+		mTitleText.setText(
+			note.getString(
+				note.getColumnIndexOrThrow(
+				NotesDbAdapter.KEY_TITLE)));
 		mBodyText.setText(note.getString(
 			note.getColumnIndexOrThrow(
 			NotesDbAdapter.KEY_BODY)));
 		*/
 
-		counters = new ArrayList<Counter>();
+		//mCounters = new ArrayList<Counter>();
 
 		//for ( )
-		counter1 = (TextView)
+		mCounter1 = (TextView)
 			this.findViewById(R.id.countingland_counter1);
 
-		//counter1.setText(value);
+		mCounter1.setText(String.valueOf(value));
+		
 	}
 }

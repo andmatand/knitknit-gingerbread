@@ -30,6 +30,7 @@ package com.example.knitknit;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -40,7 +41,7 @@ import java.util.Date;
 public class DatabaseHelper {
 	private static final String TAG = "bunny-knitknit-DatabaseHelper";
 	private static final String DATABASE_NAME = "knitknit.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 3;
 
 	private static final String PROJECT_TABLE = "projects";
 	public static final String PROJECT_KEY_ID = "_id";
@@ -60,8 +61,6 @@ public class DatabaseHelper {
 	private SQLiteDatabase mDB;
 	private Context mCtx;
 
-	private Cursor mCounterCursor;
-
 	private static class DatabaseOpenHelper extends SQLiteOpenHelper {
 		DatabaseOpenHelper(Context context) {
 		    super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -69,15 +68,10 @@ public class DatabaseHelper {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			// Drop all tables
-			//db.execSQL("DROP TABLE IF EXISTS " + PROJECT_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + COUNTER_TABLE);
-			//db.execSQL("DROP TABLE IF EXISTS " + NOTE_TABLE);
-
 			// Create projects table
 			db.execSQL(
 				"create table " + PROJECT_TABLE +
-				"(_id int primary key autoincrement, " +
+				"(_id integer primary key autoincrement, " +
 				PROJECT_KEY_NAME + " tinytext not null, " +
 				PROJECT_KEY_DATE_CREATED + " datetime " +
 					"not null," +
@@ -86,17 +80,18 @@ public class DatabaseHelper {
 			// Create counters table
 			db.execSQL(
 				"create table " + COUNTER_TABLE +
-				"(_id int primary key autoincrement, " +
-				COUNTER_KEY_PROJECT_ID + " int not null, " +
-				"showNotes bool not null, " +
-				COUNTER_KEY_NAME + " tinytext not null, " +
-				"state int not null, " +
-				"countUp bool not null, " +
-				COUNTER_KEY_VALUE + " int default 0, " +
-				"patternRepeat bool not null, " +
-				"patternLength int not null, " +
-				"targetEnabled bool not null, " +
-				"targetRows int not null);");
+				"(_id integer primary key autoincrement, " +
+				COUNTER_KEY_PROJECT_ID + " integer not null, " +
+				"showNotes bool not null default false, " +
+				COUNTER_KEY_NAME + " tinytext null, " +
+				"state integer not null default 0, " +
+				"countUp bool not null default true, " +
+				COUNTER_KEY_VALUE + " integer not null " +
+					"default 0, " +
+				"patternRepeat bool not null default false, " +
+				"patternLength integer null, " +
+				"targetEnabled bool not null default false, " +
+				"targetRows integer null);");
 			
 			// Create notes table
 		}
@@ -105,12 +100,14 @@ public class DatabaseHelper {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion,
 			int newVersion)
 		{
-			/*
-			Log.w(TAG, "Upgrading database from
-				version " + oldVersion + " to " + newVersion +
+			Log.w(TAG, "Upgrading database from " +
+				"version " + oldVersion + " to " + newVersion +
 				", which will destroy all old data");
-			*/
-			//db.execSQL("DROP TABLE IF EXISTS notes");
+
+			db.execSQL("DROP TABLE IF EXISTS " + PROJECT_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + COUNTER_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + NOTE_TABLE);
+
 			onCreate(db);
 		}
 	}
@@ -151,7 +148,9 @@ public class DatabaseHelper {
 			return -1;
 		} else {
 			// Insert 1 counter to start
-			insertCounter(projectID);
+			Log.w(TAG, "insertCounter returned:" +
+				insertCounter(projectID));
+			//insertCounter(projectID);
 
 			return projectID;
 		}
@@ -174,24 +173,33 @@ public class DatabaseHelper {
 	}
 
 	public Cursor fetchCounters(long projectID) throws SQLException {
-		if (mCounterCursor == null) {
-			Cursor mCounterCursor =
-				mDB.query(true,
-					COUNTER_TABLE,
-					new String[] {
-						COUNTER_KEY_ID,
-						COUNTER_KEY_NAME,
-						COUNTER_KEY_VALUE},
-					COUNTER_KEY_PROJECT_ID + "=" +
-						projectID,
-					null, null, null, null, null);
-			if (mCounterCursor != null) {
-				mCounterCursor.moveToFirst();
-			}
-		} else {
-			mCounterCursor.moveToNext();
+		// If there are no counters in this project
+		//if (DatabaseUtils.queryNumEntries(mDB, COUNTER_TABLE) == 0) {
+			// Add a counter
+		//	insertCounter(projectID);
+		//}
+
+		Log.w(TAG, "in fetchCounters");
+		Cursor counterCursor =
+			mDB.query(true,
+				COUNTER_TABLE,
+				new String[] {
+					COUNTER_KEY_ID,
+					COUNTER_KEY_NAME,
+					COUNTER_KEY_VALUE},
+				COUNTER_KEY_PROJECT_ID + "=" +
+					projectID,
+				null, null, null, null, null);
+		if (counterCursor != null) {
+			counterCursor.moveToFirst();
 		}
 
-		return mCounterCursor;
+		if (counterCursor.getCount() == 0) {
+			Log.w(TAG, "counterCursor was empty");
+			//Log.w(TAG, "counterCursor was empty; adding counter");
+			//insertCounter(projectID);
+		}
+
+		return counterCursor;
 	}
 }

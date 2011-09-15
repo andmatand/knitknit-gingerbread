@@ -44,6 +44,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class ProjectList extends ListActivity {
+	private static final String TAG = "bunny-knitknit-ProjectList";
 	private static final int ACTIVITY_VIEW = 1;
 
 	private DatabaseHelper mDatabaseHelper;
@@ -156,7 +157,7 @@ public class ProjectList extends ListActivity {
 		Intent i = new Intent(this, CountingLand.class);
 		i.putExtra(DatabaseHelper.PROJECT_KEY_ID, id);
 
-		Log.w("bunny-ProjectList", "ID stored");
+		Log.w(TAG, "ID stored: " + id);
 
 		startActivityForResult(i, ACTIVITY_VIEW);
 	}
