@@ -32,21 +32,72 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class CountingLand extends Activity {
 	private static final String TAG = "bunny-knitknit-CountingLand";
 	private Long mProjectID;
 	private DatabaseHelper mDatabaseHelper;
 	private TextView mCounter1;
-	private List<Counter> mCounters;
+	private ArrayList<Counter> mCounters;
 
 	private class Counter {
-		private TextView textView;
+		private long mID;
+		private String mName;
+		private int mValue;
+		private boolean mCountUp;
 
-		protected void onCreate() {
+		private TextView mTextView;
+
+		Counter(Cursor cursor) {
+			// Get all the member variables from the cursor
+			mID = cursor.getLong(cursor.getColumnIndexOrThrow(
+				DatabaseHelper.COUNTER_KEY_ID));
+			mName = cursor.getString(cursor.getColumnIndexOrThrow(
+				DatabaseHelper.COUNTER_KEY_NAME));
+			mValue = cursor.getInt(cursor.getColumnIndexOrThrow(
+				DatabaseHelper.COUNTER_KEY_VALUE));
+			mCountUp = cursor.getInt(cursor.getColumnIndexOrThrow(
+				DatabaseHelper.COUNTER_KEY_COUNTUP))
+				> 0;
+
+			// Get a handle on the only number textView for now
+			mTextView = (TextView)
+				findViewById(R.id.countingland_counter1);
+		}
+
+		long getID() {
+			return mID;
+		}
+
+		int getValue() {
+			return mValue;
+		}
+
+		// Adds or subtracts 1, depending on countUp setting
+		public void increment() {
+			if (mCountUp) {
+				mValue++;
+			} else {
+				mValue--;
+			}
+
+			render();
+
+			// Save the current value in the database
+			mDatabaseHelper.updateCounter(
+				getID(),
+				getValue());
+		}
+
+		// Update the TextView with the counter's current value
+		public void render() {
+			mTextView.setText(String.valueOf(this.getValue()));
 		}
 	}
 
@@ -82,14 +133,24 @@ public class CountingLand extends Activity {
 
 		Log.w(TAG, "in onCreate, mProjectID: " + mProjectID);
 
+		// Add an onCLickListener to the whole screen
+		RelativeLayout wrapper = (RelativeLayout)
+			findViewById(R.id.countingland_wrapper);
+		wrapper.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.w(TAG, "tapped");
+				increment();
+			}
+		});
+
 		// Fill the onscreen objects with data
 		fillData();
-
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		Log.w("bunny-CountingLand", "in onSaveInstanceState");
+		Log.w(TAG, "in onSaveInstanceState");
 		super.onSaveInstanceState(outState);
 		saveState();
 		outState.putSerializable(DatabaseHelper.PROJECT_KEY_ID,
@@ -113,37 +174,36 @@ public class CountingLand extends Activity {
 	}
 
 	private void fillData() {
+		// Set activity title to project name
+		getWindow().setTitle(
+			mDatabaseHelper.getProjectName(mProjectID));
+
+
+		// Create an array of counter objects
+		mCounters = new ArrayList<Counter>();
+
+		// Get a cursor over the list of counters in this project
 		Cursor counterCursor =
 			mDatabaseHelper.fetchCounters(mProjectID);
-		/*
+
+		// Loop over each row with the cursor
 		do {
-
+			mCounters.add(new Counter(counterCursor));
 		} while (counterCursor.moveToNext());
-		*/
-		int value = counterCursor.getInt(
-			counterCursor.getColumnIndexOrThrow(
-				DatabaseHelper.COUNTER_KEY_VALUE));
-
 		counterCursor.close();
-		Log.w(TAG, "Got value from cursor");
-		/*
-		startManagingCursor(counters);
-		mTitleText.setText(
-			note.getString(
-				note.getColumnIndexOrThrow(
-				NotesDbAdapter.KEY_TITLE)));
-		mBodyText.setText(note.getString(
-			note.getColumnIndexOrThrow(
-			NotesDbAdapter.KEY_BODY)));
-		*/
 
-		//mCounters = new ArrayList<Counter>();
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.render();
+		}
+	}
 
-		//for ( )
-		mCounter1 = (TextView)
-			this.findViewById(R.id.countingland_counter1);
-
-		mCounter1.setText(String.valueOf(value));
-		
+	// Adds (or subtracts, depending on counter setting) to all counters
+	private void increment() {
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.increment();
+			//c.render();
+		}
 	}
 }

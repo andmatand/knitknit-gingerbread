@@ -68,8 +68,15 @@ public class ProjectList extends ListActivity {
 
 	private void fillList() {
 		// Get a cursor over a list of all projects
-		Cursor cursor = mDatabaseHelper.selectAllProjects();
+		Cursor cursor = mDatabaseHelper.fetchProjects();
 		startManagingCursor(cursor);
+
+		//cursor.moveToFirst();
+		/*
+		Log.w(TAG, "project title: " + cursor.getString(
+			cursor.getColumnIndexOrThrow(
+				DatabaseHelper.PROJECT_KEY_NAME)));
+				*/
 
 		// Create an array to specify the fields we want to display in
 		// the list
@@ -88,8 +95,6 @@ public class ProjectList extends ListActivity {
 				from, to);
 
 		setListAdapter(projects);
-
-		//Log.w("spam", "filled list");
 	}
 
 	@Override

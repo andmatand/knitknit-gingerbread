@@ -41,19 +41,20 @@ import java.util.Date;
 public class DatabaseHelper {
 	private static final String TAG = "bunny-knitknit-DatabaseHelper";
 	private static final String DATABASE_NAME = "knitknit.db";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 
 	private static final String PROJECT_TABLE = "projects";
 	public static final String PROJECT_KEY_ID = "_id";
 	public static final String PROJECT_KEY_NAME = "name";
-	public static final String PROJECT_KEY_DATE_CREATED = "dateCreated";
-	public static final String PROJECT_KEY_DATE_ACCESSED = "dateAccessed";
+	public static final String PROJECT_KEY_DATECREATED = "dateCreated";
+	public static final String PROJECT_KEY_DATEACCESSED = "dateAccessed";
 
 	private static final String COUNTER_TABLE = "counters";
 	public static final String COUNTER_KEY_ID = "_id";
-	public static final String COUNTER_KEY_PROJECT_ID = "projects_id";
+	public static final String COUNTER_KEY_PROJECTID = "projects_id";
 	public static final String COUNTER_KEY_NAME = "name";
 	public static final String COUNTER_KEY_VALUE = "value";
+	public static final String COUNTER_KEY_COUNTUP = "countUp";
 
 	private static final String NOTE_TABLE = "notes";
 
@@ -73,24 +74,25 @@ public class DatabaseHelper {
 				"create table " + PROJECT_TABLE +
 				"(_id integer primary key autoincrement, " +
 				PROJECT_KEY_NAME + " tinytext not null, " +
-				PROJECT_KEY_DATE_CREATED + " datetime " +
+				PROJECT_KEY_DATECREATED + " datetime " +
 					"not null," +
-				PROJECT_KEY_DATE_ACCESSED + " datetime null);");
+				PROJECT_KEY_DATEACCESSED + " datetime null);");
 
 			// Create counters table
 			db.execSQL(
 				"create table " + COUNTER_TABLE +
 				"(_id integer primary key autoincrement, " +
-				COUNTER_KEY_PROJECT_ID + " integer not null, " +
-				"showNotes bool not null default false, " +
+				COUNTER_KEY_PROJECTID + " integer not null, " +
+				"showNotes bool not null default 0, " +
 				COUNTER_KEY_NAME + " tinytext null, " +
 				"state integer not null default 0, " +
-				"countUp bool not null default true, " +
+				COUNTER_KEY_COUNTUP + " bool not null " +
+					"default 1, " +
 				COUNTER_KEY_VALUE + " integer not null " +
 					"default 0, " +
-				"patternRepeat bool not null default false, " +
+				"patternRepeat bool not null default 0, " +
 				"patternLength integer null, " +
-				"targetEnabled bool not null default false, " +
+				"targetEnabled bool not null default 0, " +
 				"targetRows integer null);");
 			
 			// Create notes table
@@ -138,7 +140,7 @@ public class DatabaseHelper {
 
 		ContentValues projectValues = new ContentValues();
 		projectValues.put(PROJECT_KEY_NAME, name);
-		projectValues.put(PROJECT_KEY_DATE_CREATED,
+		projectValues.put(PROJECT_KEY_DATECREATED,
 			dateFormat.format(new Date()));
 
 		long projectID = mDB.insert(PROJECT_TABLE, null, projectValues);
@@ -158,12 +160,12 @@ public class DatabaseHelper {
 
 	public long insertCounter(long projectID) {
 		ContentValues counterValues = new ContentValues();
-		counterValues.put(COUNTER_KEY_PROJECT_ID, projectID);
+		counterValues.put(COUNTER_KEY_PROJECTID, projectID);
 
 		return mDB.insert(COUNTER_TABLE, null, counterValues);
 	}
 
-	public Cursor selectAllProjects() {
+	public Cursor fetchProjects() {
 		// Returns a Cursor over the list of all projects in the
 		// database
 		return mDB.query(
@@ -172,34 +174,52 @@ public class DatabaseHelper {
 			null, null, null, null, null);
 	}
 
+	public String getProjectName(long projectID) {
+		Cursor cursor = mDB.query(
+			true,
+			PROJECT_TABLE,
+			new String[] {PROJECT_KEY_NAME},
+			PROJECT_KEY_ID + "=" + projectID,
+			null, null, null, null, null);
+
+		cursor.moveToFirst();
+
+		return cursor.getString(
+			cursor.getColumnIndexOrThrow(PROJECT_KEY_NAME));
+	}
+
 	public Cursor fetchCounters(long projectID) throws SQLException {
-		// If there are no counters in this project
-		//if (DatabaseUtils.queryNumEntries(mDB, COUNTER_TABLE) == 0) {
-			// Add a counter
-		//	insertCounter(projectID);
-		//}
-
 		Log.w(TAG, "in fetchCounters");
-		Cursor counterCursor =
-			mDB.query(true,
-				COUNTER_TABLE,
-				new String[] {
-					COUNTER_KEY_ID,
-					COUNTER_KEY_NAME,
-					COUNTER_KEY_VALUE},
-				COUNTER_KEY_PROJECT_ID + "=" +
-					projectID,
-				null, null, null, null, null);
-		if (counterCursor != null) {
-			counterCursor.moveToFirst();
+
+		Cursor cursor = mDB.query(
+			true,
+			COUNTER_TABLE,
+			new String[] {
+				COUNTER_KEY_ID,
+				COUNTER_KEY_NAME,
+				COUNTER_KEY_VALUE,
+				COUNTER_KEY_COUNTUP},
+			COUNTER_KEY_PROJECTID + "=" + projectID,
+			null, null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
 		}
 
-		if (counterCursor.getCount() == 0) {
+		if (cursor.getCount() == 0) {
 			Log.w(TAG, "counterCursor was empty");
-			//Log.w(TAG, "counterCursor was empty; adding counter");
-			//insertCounter(projectID);
 		}
 
-		return counterCursor;
+		return cursor;
+	}
+
+	public boolean updateCounter(long counterID, int value) {
+		ContentValues args = new ContentValues();
+		args.put(COUNTER_KEY_VALUE, value);
+
+		return mDB.update(
+			COUNTER_TABLE,
+			args,
+			COUNTER_KEY_ID + "=" + counterID,
+			null) > 0;
 	}
 }
