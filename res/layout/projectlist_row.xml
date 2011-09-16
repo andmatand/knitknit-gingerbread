@@ -14,5 +14,6 @@
 		android:paddingBottom="10sp"
 		android:paddingLeft="10sp"
 		android:paddingRight="0sp"
-		android:textSize="25sp" />
+		android:textSize="25sp"
+		android:typeface="monospace" />
 </RelativeLayout>
