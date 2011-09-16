@@ -46,61 +46,6 @@ public class CountingLand extends Activity {
 	private TextView mCounter1;
 	private ArrayList<Counter> mCounters;
 
-	private class Counter {
-		private long mID;
-		private String mName;
-		private int mValue;
-		private boolean mCountUp;
-
-		private TextView mTextView;
-
-		Counter(Cursor cursor) {
-			// Get all the member variables from the cursor
-			mID = cursor.getLong(cursor.getColumnIndexOrThrow(
-				DatabaseHelper.COUNTER_KEY_ID));
-			mName = cursor.getString(cursor.getColumnIndexOrThrow(
-				DatabaseHelper.COUNTER_KEY_NAME));
-			mValue = cursor.getInt(cursor.getColumnIndexOrThrow(
-				DatabaseHelper.COUNTER_KEY_VALUE));
-			mCountUp = cursor.getInt(cursor.getColumnIndexOrThrow(
-				DatabaseHelper.COUNTER_KEY_COUNTUP))
-				> 0;
-
-			// Get a handle on the only number textView for now
-			mTextView = (TextView)
-				findViewById(R.id.countingland_counter1);
-		}
-
-		long getID() {
-			return mID;
-		}
-
-		int getValue() {
-			return mValue;
-		}
-
-		// Adds or subtracts 1, depending on countUp setting
-		public void increment() {
-			if (mCountUp) {
-				mValue++;
-			} else {
-				mValue--;
-			}
-
-			render();
-
-			// Save the current value in the database
-			mDatabaseHelper.updateCounter(
-				getID(),
-				getValue());
-		}
-
-		// Update the TextView with the counter's current value
-		public void render() {
-			mTextView.setText(String.valueOf(this.getValue()));
-		}
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -171,6 +116,10 @@ public class CountingLand extends Activity {
 	}
 
 	private void saveState() {
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.saveState();
+		}
 	}
 
 	private void fillData() {
@@ -186,9 +135,12 @@ public class CountingLand extends Activity {
 		Cursor counterCursor =
 			mDatabaseHelper.fetchCounters(mProjectID);
 
+		// Get the current view for sending to Counter constructor
+		View v = findViewById(R.id.countingland_wrapper);
+
 		// Loop over each row with the cursor
 		do {
-			mCounters.add(new Counter(counterCursor));
+			mCounters.add(new Counter(this, v, counterCursor));
 		} while (counterCursor.moveToNext());
 		counterCursor.close();
 
