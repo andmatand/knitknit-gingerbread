@@ -4,4 +4,5 @@
 	android:layout_weight="1"
 	android:gravity="center"
 	android:maxLines="1"
+	android:typeface="monospace"
 	android:padding="10sp" />

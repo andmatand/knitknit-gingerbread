@@ -35,10 +35,13 @@ import android.database.Cursor;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -48,7 +51,9 @@ public class ProjectList extends ListActivity {
 	private static final int ACTIVITY_VIEW = 1;
 
 	private DatabaseHelper mDatabaseHelper;
-	private static final int ADD_ID = Menu.FIRST;
+	private static final int OPTIONS_ADD = Menu.FIRST;
+	private static final int CONTEXT_DELETE = Menu.FIRST + 1;
+	private static final int CONTEXT_RENAME = Menu.FIRST + 2;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,155 @@ public class ProjectList extends ListActivity {
 		fillList();
 
 		registerForContextMenu(getListView());
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus)
+			fillList();
+	}
+
+	/* Context Menu ******************************************************/
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+		ContextMenuInfo menuInfo)
+	{
+		super.onCreateContextMenu(menu, v, menuInfo);
+		menu.add(0, CONTEXT_DELETE, 0, R.string.projectlist_delete);
+		menu.add(0, CONTEXT_RENAME, 0, R.string.projectlist_rename);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// Get the ID the list item (same as projectID)
+		AdapterContextMenuInfo info =
+			(AdapterContextMenuInfo) item.getMenuInfo();
+
+		switch(item.getItemId()) {
+		case CONTEXT_DELETE:
+			deleteProject(info.id);
+			fillList();
+			return true;
+		case CONTEXT_RENAME:
+			renameProject(info.id);
+			return true;
+		}
+		return super.onContextItemSelected(item);
+	}
+
+	private void deleteProject(long projectID) {
+		// TODO: Add confirmation dialog
+		mDatabaseHelper.deleteProject(projectID);
+	}
+
+	private void renameProject(long projectID) {
+		showNameDialog(projectID);
+	}
+
+	/* Options Menu ******************************************************/
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, OPTIONS_ADD, 0, R.string.projectlist_add);
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureID, MenuItem item) {
+		switch(item.getItemId()) {
+		case OPTIONS_ADD:
+			createProject();
+			return true;
+		}
+
+		return super.onMenuItemSelected(featureID, item);
+	}
+
+	private void createProject() {
+		showNameDialog(null);
+	}
+
+	// @projectID
+	//	-If null, we are creating a project
+	//	-If a number, we are renaming the project with this projectID
+	private void showNameDialog(final Long projectID) {
+		// Instantiate a view of projectlist_namedialog.xml
+		LayoutInflater inflater = (LayoutInflater)
+			this.getSystemService(LAYOUT_INFLATER_SERVICE);
+		View view = inflater.inflate(R.layout.projectlist_namedialog,
+			null, false);
+
+		// Find the name EditText field
+		final EditText name = (EditText)
+			view.findViewById(R.id.projectlist_namedialog_name);
+
+		// If we are renaming, put the current name in the box
+		if (projectID != null) {
+			// TODO: get project's current name
+			// name.setText();
+		}
+
+		DialogInterface.OnClickListener listener =
+			new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if (projectID == null) {
+					mDatabaseHelper.insertProject(
+						name.getText().toString());
+					fillList();
+				} else {
+					mDatabaseHelper.renameProject(
+						projectID,
+						name.getText().toString());
+				}
+				return;
+			}
+			};
+
+		// Create an AlertDialog and set its attributes
+		AlertDialog.Builder nameDialog =
+			new AlertDialog.Builder(this);
+		nameDialog.setCancelable(true);
+		nameDialog.setTitle(
+			(projectID == null ?
+			R.string.projectlist_namedialog_title_create :
+			R.string.projectlist_namedialog_title_rename));
+		nameDialog.setPositiveButton(
+			(projectID == null ?
+				R.string.projectlist_namedialog_create :
+				R.string.projectlist_namedialog_rename),
+			listener);
+
+		// Fill the dialog with the view
+		nameDialog.setView(view);
+		nameDialog.create();
+
+		// Show the dialog
+		nameDialog.show();
+	}
+
+
+	/* List **************************************************************/
+	@Override
+	protected void onListItemClick(ListView l, View v, int position,
+		long id)
+	{
+		super.onListItemClick(l, v, position, id);
+
+		Intent i = new Intent(this, CountingLand.class);
+		i.putExtra(DatabaseHelper.PROJECT_KEY_ID, id);
+
+		Log.w(TAG, "ID stored: " + id);
+
+		startActivityForResult(i, ACTIVITY_VIEW);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+		Intent intent)
+	{
+		super.onActivityResult(requestCode, resultCode, intent);
+		fillList();
 	}
 
 	private void fillList() {
@@ -95,83 +249,5 @@ public class ProjectList extends ListActivity {
 				from, to);
 
 		setListAdapter(projects);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		menu.add(0, ADD_ID, 0, R.string.projectlist_add);
-		return true;
-	}
-
-	@Override
-	public boolean onMenuItemSelected(int featureID, MenuItem item) {
-		switch(item.getItemId()) {
-		case ADD_ID:
-			createProject();
-			return true;
-		}
-
-		return super.onMenuItemSelected(featureID, item);
-	}
-
-	private void createProject() {
-		// Instantiate a view of projectlist_namedialog.xml
-		LayoutInflater inflater = (LayoutInflater)
-			this.getSystemService(LAYOUT_INFLATER_SERVICE);
-		View view = inflater.inflate(R.layout.projectlist_namedialog,
-			null, false);
-
-		// Find the name EditText field
-		final EditText name = (EditText)
-			view.findViewById(R.id.projectlist_namedialog_name);
-
-		DialogInterface.OnClickListener listener =
-			new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				mDatabaseHelper.insertProject(
-					name.getText().toString());
-				fillList();
-				return;
-			}
-			};
-
-		// Create an AlertDialog and set its attributes
-		AlertDialog.Builder nameDialog =
-			new AlertDialog.Builder(this);
-		nameDialog.setCancelable(true);
-		nameDialog.setTitle(R.string.projectlist_namedialog_title);
-		nameDialog.setPositiveButton(
-			R.string.projectlist_namedialog_create,
-			listener);
-
-		// Fill the dialog with the view
-		nameDialog.setView(view);
-		nameDialog.create();
-
-		// Show the dialog
-		nameDialog.show();
-	}
-	
-	@Override
-	protected void onListItemClick(ListView l, View v, int position,
-		long id)
-	{
-		super.onListItemClick(l, v, position, id);
-
-		Intent i = new Intent(this, CountingLand.class);
-		i.putExtra(DatabaseHelper.PROJECT_KEY_ID, id);
-
-		Log.w(TAG, "ID stored: " + id);
-
-		startActivityForResult(i, ACTIVITY_VIEW);
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-		Intent intent)
-	{
-		super.onActivityResult(requestCode, resultCode, intent);
-		fillList();
 	}
 }

@@ -44,6 +44,8 @@ public class CountingLand extends Activity {
 	private Long mProjectID;
 	private DatabaseHelper mDatabaseHelper;
 	private ArrayList<Counter> mCounters;
+	private LinearLayout mWrapper;
+	private LinearLayout mCounterWrapper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,37 +71,48 @@ public class CountingLand extends Activity {
 				null);
 		}
 
+		Log.w(TAG, "in onCreate, mProjectID: " + mProjectID);
+
 		// If projectID is still null, there is a problem and we need
 		// to get out of here since we can't do anything
 		if (mProjectID == null) {
 			finish();
 		}
 
-		Log.w(TAG, "in onCreate, mProjectID: " + mProjectID);
+		// Find the wrapper view (the whole screen)
+		mWrapper =
+			(LinearLayout) findViewById(R.id.countingland_wrapper);
 
-		// Add an onCLickListener to the whole screen
-		LinearLayout wrapper = (LinearLayout)
-			findViewById(R.id.countingland_wrapper);
-		wrapper.setOnClickListener(new View.OnClickListener() {
+		// Add an onCLickListener to the wrapper view
+		mWrapper.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Log.w(TAG, "tapped");
 				increment();
 			}
 		});
+
+		// Find the counter wrapper view
+		mCounterWrapper =
+			(LinearLayout) findViewById(
+				R.id.countingland_counterwrapper);
+
+		loadCounters();
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.w(TAG, "in onSaveInstanceState");
 		super.onSaveInstanceState(outState);
-		saveState();
+
+		// Save the project ID to the bundle
 		outState.putSerializable(DatabaseHelper.PROJECT_KEY_ID,
 			mProjectID);
 	}
 
 	@Override
 	protected void onPause() {
+		Log.w(TAG, "in onPause");
 		super.onPause();
 		saveState();
 	}
@@ -111,20 +124,25 @@ public class CountingLand extends Activity {
 		fillData();
 	}
 
+	@Override
+	protected void onRestart() {
+		Log.w(TAG, "in onRestart");
+		super.onRestart();
+	}
+
 	private void saveState() {
+		// Save all the counters to the database
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
 			c.saveState();
 		}
 	}
 
-	private void fillData() {
-		// Set activity title to project name
-		getWindow().setTitle(
-			mDatabaseHelper.getProjectName(mProjectID));
+	private void loadCounters() {
+		// Remove any previous counter views
+		mCounterWrapper.removeAllViews();
 
-
-		// Create an array of counter objects
+		// Create an ArrayList of counter objects
 		mCounters = new ArrayList<Counter>();
 
 		// Get a cursor over the list of counters in this project
@@ -137,7 +155,18 @@ public class CountingLand extends Activity {
 			mCounters.add(new Counter(this, counterCursor));
 		} while (counterCursor.moveToNext());
 		counterCursor.close();
+	}
 
+	private void fillData() {
+		// Set activity title to project name
+		getWindow().setTitle(
+			mDatabaseHelper.getProjectName(mProjectID));
+
+		// Set text of counter views
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.render();
+		}
 	}
 
 	// Adds (or subtracts, depending on counter setting) to all counters
@@ -151,10 +180,8 @@ public class CountingLand extends Activity {
 	private void sizeCounters() {
 		// Set the text size of the counters based on the available
 		// height divided by the number of counters
-		View wrapper = (View)
-			findViewById(R.id.countingland_counterwrapper);
 		int counterSize =
-			(int) ((wrapper.getHeight() / mCounters.size()) * .5);
+			(int) ((mWrapper.getHeight() / mCounters.size()) * .5);
 		Log.w(TAG, "counterSize: " + counterSize);
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
@@ -165,6 +192,7 @@ public class CountingLand extends Activity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus) sizeCounters();
+		if (hasFocus)
+			sizeCounters();
 	}
 }

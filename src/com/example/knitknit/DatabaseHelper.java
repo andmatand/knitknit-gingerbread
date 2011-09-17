@@ -41,7 +41,7 @@ import java.util.Date;
 public class DatabaseHelper {
 	private static final String TAG = "bunny-knitknit-DatabaseHelper";
 	private static final String DATABASE_NAME = "knitknit.db";
-	private static final int DATABASE_VERSION = 5;
+	private static final int DATABASE_VERSION = 6;
 
 	private static final String PROJECT_TABLE = "projects";
 	public static final String PROJECT_KEY_ID = "_id";
@@ -55,6 +55,8 @@ public class DatabaseHelper {
 	public static final String COUNTER_KEY_NAME = "name";
 	public static final String COUNTER_KEY_VALUE = "value";
 	public static final String COUNTER_KEY_COUNTUP = "countUp";
+	public static final String COUNTER_KEY_PATTERNON = "patternOn";
+	public static final String COUNTER_KEY_PATTERNLENGTH = "patternLength";
 
 	private static final String NOTE_TABLE = "notes";
 
@@ -90,8 +92,10 @@ public class DatabaseHelper {
 					"default 1, " +
 				COUNTER_KEY_VALUE + " integer not null " +
 					"default 0, " +
-				"patternRepeat bool not null default 0, " +
-				"patternLength integer null, " +
+				COUNTER_KEY_PATTERNON + " bool not null " +
+					"default 0, " +
+				COUNTER_KEY_PATTERNLENGTH + " integer " +
+					"not null default 10, " +
 				"targetEnabled bool not null default 0, " +
 				"targetRows integer null);");
 			
@@ -188,6 +192,24 @@ public class DatabaseHelper {
 			cursor.getColumnIndexOrThrow(PROJECT_KEY_NAME));
 	}
 
+	public boolean deleteProject(long projectID) {
+		return mDB.delete(
+			PROJECT_TABLE,
+			PROJECT_KEY_ID + "=" + projectID,
+			null) > 0;
+	}
+
+	public boolean renameProject(Long projectID, String name) {
+		ContentValues args = new ContentValues();
+		args.put(PROJECT_KEY_NAME, name);
+
+		return mDB.update(
+			PROJECT_TABLE,
+			args,
+			PROJECT_KEY_ID + "=" + projectID,
+			null) > 0;
+	}
+
 	public Cursor fetchCounters(long projectID) throws SQLException {
 		Log.w(TAG, "in fetchCounters");
 
@@ -198,7 +220,9 @@ public class DatabaseHelper {
 				COUNTER_KEY_ID,
 				COUNTER_KEY_NAME,
 				COUNTER_KEY_VALUE,
-				COUNTER_KEY_COUNTUP},
+				COUNTER_KEY_COUNTUP,
+				COUNTER_KEY_PATTERNON,
+				COUNTER_KEY_PATTERNLENGTH},
 			COUNTER_KEY_PROJECTID + "=" + projectID,
 			null, null, null, null, null);
 		if (cursor != null) {

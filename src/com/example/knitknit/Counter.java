@@ -42,6 +42,8 @@ public class Counter {
 	private String mName;
 	private int mValue;
 	private boolean mCountUp;
+	private boolean mPatternOn;
+	private int mPatternLength;
 
 	private TextView mView;
 	private DatabaseHelper mDatabaseHelper;
@@ -57,6 +59,11 @@ public class Counter {
 		mCountUp = cursor.getInt(cursor.getColumnIndexOrThrow(
 			DatabaseHelper.COUNTER_KEY_COUNTUP))
 			> 0;
+		mPatternOn = cursor.getInt(cursor.getColumnIndexOrThrow(
+			DatabaseHelper.COUNTER_KEY_PATTERNON))
+			> 0;
+		mPatternLength = cursor.getInt(cursor.getColumnIndexOrThrow(
+			DatabaseHelper.COUNTER_KEY_PATTERNLENGTH));
 
 		// Inflate a new TextView based on the template layout
 		LayoutInflater inflater =
@@ -94,8 +101,18 @@ public class Counter {
 	public void increment() {
 		if (mCountUp) {
 			mValue++;
+			if (mPatternOn) {
+				if (mValue > mPatternLength - 1) {
+					mValue = 0;
+				}
+			}
 		} else {
 			mValue--;
+			if (mPatternOn) {
+				if (mValue < 0) {
+					mValue = mPatternLength - 1;
+				}
+			}
 		}
 
 		render();
