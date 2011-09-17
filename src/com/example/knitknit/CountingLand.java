@@ -33,7 +33,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,7 +43,6 @@ public class CountingLand extends Activity {
 	private static final String TAG = "bunny-knitknit-CountingLand";
 	private Long mProjectID;
 	private DatabaseHelper mDatabaseHelper;
-	private TextView mCounter1;
 	private ArrayList<Counter> mCounters;
 
 	@Override
@@ -79,7 +78,7 @@ public class CountingLand extends Activity {
 		Log.w(TAG, "in onCreate, mProjectID: " + mProjectID);
 
 		// Add an onCLickListener to the whole screen
-		RelativeLayout wrapper = (RelativeLayout)
+		LinearLayout wrapper = (LinearLayout)
 			findViewById(R.id.countingland_wrapper);
 		wrapper.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -88,9 +87,6 @@ public class CountingLand extends Activity {
 				increment();
 			}
 		});
-
-		// Fill the onscreen objects with data
-		fillData();
 	}
 
 	@Override
@@ -135,19 +131,13 @@ public class CountingLand extends Activity {
 		Cursor counterCursor =
 			mDatabaseHelper.fetchCounters(mProjectID);
 
-		// Get the current view for sending to Counter constructor
-		View v = findViewById(R.id.countingland_wrapper);
-
 		// Loop over each row with the cursor
 		do {
-			mCounters.add(new Counter(this, v, counterCursor));
+			// Add a new counter object to the counter ArrayList
+			mCounters.add(new Counter(this, counterCursor));
 		} while (counterCursor.moveToNext());
 		counterCursor.close();
 
-		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
-			Counter c = (Counter) it.next();
-			c.render();
-		}
 	}
 
 	// Adds (or subtracts, depending on counter setting) to all counters
@@ -155,7 +145,26 @@ public class CountingLand extends Activity {
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
 			c.increment();
-			//c.render();
 		}
+	}
+
+	private void sizeCounters() {
+		// Set the text size of the counters based on the available
+		// height divided by the number of counters
+		View wrapper = (View)
+			findViewById(R.id.countingland_counterwrapper);
+		int counterSize =
+			(int) ((wrapper.getHeight() / mCounters.size()) * .5);
+		Log.w(TAG, "counterSize: " + counterSize);
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.setSize(counterSize);
+		}
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) sizeCounters();
 	}
 }

@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/countingland_wrapper"
-	android:orientation="horizontal"
+	android:orientation="vertical"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:clickable="true">
 
-	<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/countingland_totalrows"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_weight="1"
-		android:layout_alignParentRight="true"
-		android:maxLines="1"
-		android:paddingTop="5sp"
-		android:paddingRight="5sp"
-		android:textSize="16sp"
-		android:gravity="right"
-        	android:text="total rows: 11" />
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<TextView
+			android:id="@+id/countingland_totalrows"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:maxLines="1"
+			android:padding="5sp"
+			android:textSize="18sp"
+			android:gravity="right"
+			android:text="total rows: 11" />
+	</RelativeLayout>
 
-	<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/countingland_counter1"
+	<LinearLayout
+		android:id="@+id/countingland_counterwrapper"
+		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_weight="1"
-		android:gravity="center"
-		android:maxLines="1"
-		android:padding="10sp"
-		android:textSize="250sp" />
-</RelativeLayout>
+		android:gravity="center_vertical"
+		android:background="@android:color/transparent">
+	</LinearLayout>
+</LinearLayout>

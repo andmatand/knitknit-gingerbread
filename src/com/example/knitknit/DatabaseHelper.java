@@ -41,7 +41,7 @@ import java.util.Date;
 public class DatabaseHelper {
 	private static final String TAG = "bunny-knitknit-DatabaseHelper";
 	private static final String DATABASE_NAME = "knitknit.db";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 
 	private static final String PROJECT_TABLE = "projects";
 	public static final String PROJECT_KEY_ID = "_id";
@@ -205,6 +205,13 @@ public class DatabaseHelper {
 			cursor.moveToFirst();
 		}
 
+		// TEMP hack to add a second counter
+		/*
+		if (cursor.getCount() < 2) {
+			insertCounter(projectID);
+		}
+		*/
+
 		if (cursor.getCount() == 0) {
 			Log.w(TAG, "counterCursor was empty");
 		}
@@ -219,6 +226,13 @@ public class DatabaseHelper {
 		return mDB.update(
 			COUNTER_TABLE,
 			args,
+			COUNTER_KEY_ID + "=" + counterID,
+			null) > 0;
+	}
+
+	public boolean deleteCounter(long counterID) {
+		return mDB.delete(
+			COUNTER_TABLE,
 			COUNTER_KEY_ID + "=" + counterID,
 			null) > 0;
 	}

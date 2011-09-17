@@ -27,22 +27,27 @@
 
 package com.example.knitknit;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 
 public class Counter {
+	private static final String TAG = "bunny-knitknit-Counter";
 	private long mID;
 	private String mName;
 	private int mValue;
 	private boolean mCountUp;
 
-	private TextView mTextView;
+	private TextView mView;
 	private DatabaseHelper mDatabaseHelper;
 
-	Counter(Context context, View view, Cursor cursor) {
-		// Get all the member variables from the cursor
+	Counter(Context context, Cursor cursor) {
+		// Get all the member variables from the database cursor
 		mID = cursor.getLong(cursor.getColumnIndexOrThrow(
 			DatabaseHelper.COUNTER_KEY_ID));
 		mName = cursor.getString(cursor.getColumnIndexOrThrow(
@@ -53,9 +58,24 @@ public class Counter {
 			DatabaseHelper.COUNTER_KEY_COUNTUP))
 			> 0;
 
-		// Get a handle on the only number textView for now
-		mTextView = (TextView)
-			view.findViewById(R.id.countingland_counter1);
+		// Inflate a new TextView based on the template layout
+		LayoutInflater inflater =
+			(LayoutInflater) context.getSystemService(
+				Context.LAYOUT_INFLATER_SERVICE);
+		mView =
+			(TextView) inflater.inflate(
+				R.layout.countingland_counter, null, false);
+
+		// Fill mView with its current contents
+		render();
+
+		// Find the parent view
+		LinearLayout parentView =
+			(LinearLayout) ((Activity) context).findViewById(
+				R.id.countingland_counterwrapper);
+
+		// Add this view to the parent view
+		parentView.addView(mView);
 
 		// Open database
 		mDatabaseHelper = new DatabaseHelper(context);
@@ -81,9 +101,13 @@ public class Counter {
 		render();
 	}
 
-	// Update the TextView with the counter's current value
 	public void render() {
-		mTextView.setText(String.valueOf(this.getValue()));
+		// Update the TextView with the counter's current value
+		mView.setText(String.valueOf(this.getValue()));
+	}
+
+	public void setSize(int size) {
+		mView.setTextSize(size);
 	}
 
 	public void saveState() {
