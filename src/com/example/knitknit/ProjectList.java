@@ -45,6 +45,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class ProjectList extends ListActivity {
 	private static final String TAG = "bunny-knitknit-ProjectList";
@@ -100,7 +101,10 @@ public class ProjectList extends ListActivity {
 			fillList();
 			return true;
 		case CONTEXT_RENAME:
-			renameProject(info.id);
+			renameProject(info.id,
+				(String)
+				((TextView) info.targetView.findViewById(
+					R.id.projectlist_row_name)).getText());
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -111,8 +115,8 @@ public class ProjectList extends ListActivity {
 		mDatabaseHelper.deleteProject(projectID);
 	}
 
-	private void renameProject(long projectID) {
-		showNameDialog(projectID);
+	private void renameProject(long projectID, String currentName) {
+		showNameDialog(projectID, currentName);
 	}
 
 	/* Options Menu ******************************************************/
@@ -135,13 +139,18 @@ public class ProjectList extends ListActivity {
 	}
 
 	private void createProject() {
-		showNameDialog(null);
+		showNameDialog();
+	}
+
+	// Overloaded version for creating only
+	private void showNameDialog() {
+		showNameDialog(null, null);
 	}
 
 	// @projectID
 	//	-If null, we are creating a project
 	//	-If a number, we are renaming the project with this projectID
-	private void showNameDialog(final Long projectID) {
+	private void showNameDialog(final Long projectID, String currentName) {
 		// Instantiate a view of projectlist_namedialog.xml
 		LayoutInflater inflater = (LayoutInflater)
 			this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -153,9 +162,8 @@ public class ProjectList extends ListActivity {
 			view.findViewById(R.id.projectlist_namedialog_name);
 
 		// If we are renaming, put the current name in the box
-		if (projectID != null) {
-			// TODO: get project's current name
-			// name.setText();
+		if (currentName != null) {
+			name.append(currentName);
 		}
 
 		DialogInterface.OnClickListener listener =
