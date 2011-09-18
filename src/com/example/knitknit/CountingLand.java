@@ -32,6 +32,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,6 +51,8 @@ public class CountingLand extends Activity {
 	private CountingLandWrapper mWrapper;
 	private LinearLayout mCounterWrapper;
 
+	private static final int MENU_EDIT = Menu.FIRST;
+	private static final int MENU_DELETE = Menu.FIRST + 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +178,7 @@ public class CountingLand extends Activity {
 	}
 
 	// Adds (or subtracts, depending on counter setting) to all counters
-	private void increment() {
+	public void increment() {
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
 			c.increment();
@@ -197,4 +203,14 @@ public class CountingLand extends Activity {
 		if (hasFocus)
 			sizeCounters();
 	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+		ContextMenuInfo menuInfo)
+	{
+		super.onCreateContextMenu(menu, v, menuInfo);
+		menu.add(0, MENU_EDIT, 0, R.string.counter_edit);
+		menu.add(0, MENU_DELETE, 0, R.string.counter_delete);
+	}
+
 }

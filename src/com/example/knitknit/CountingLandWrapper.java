@@ -31,20 +31,25 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
 
 public class CountingLandWrapper extends LinearLayout {
 	private static final String TAG = "bunny-knitknit-CountingLandWrapper";
-	protected MotionEvent touchDown = null;
-	protected MotionEvent touchUp = null;
+	private Context mContext;
+
+	protected MotionEvent mTouchDown = null;
+	protected MotionEvent mTouchUp = null;
 
 	public CountingLandWrapper(Context context) {
 		super(context);
+		mContext = context;
 		this.setClickable(true);
 	}
 
 	public CountingLandWrapper(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		mContext = context;
 		this.setClickable(true);
 	}
 
@@ -53,12 +58,17 @@ public class CountingLandWrapper extends LinearLayout {
 		switch(event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				Log.w(TAG, "intercepted down event");
-				touchDown = MotionEvent.obtain(event);
+				mTouchDown = MotionEvent.obtain(event);
 				break;
 			case MotionEvent.ACTION_UP:
 				Log.w(TAG, "intercepted up event");
-				touchUp = MotionEvent.obtain(event);
-				break;
+				mTouchUp = MotionEvent.obtain(event);
+
+				//handleTouch();
+				((CountingLand) mContext).increment();
+
+				// Intercept the event
+				return true;
 		}
 
 		// Otherwise let the event pass through to the children
@@ -68,13 +78,45 @@ public class CountingLandWrapper extends LinearLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		// If the touch event has been for a short time
-		if (touchUp.getEventTime() - touchDown.getEventTime() < 500) {
-			// Capture the event
-			return true;
+		Log.w(TAG, "in onTouchEvent");
+
+		switch(event.getAction()) {
+			case MotionEvent.ACTION_UP:
+				Log.w(TAG, "got up event");
+				//mTouchUp = MotionEvent.obtain(event);
+				((CountingLand) mContext).increment();
+				break;
 		}
 
-		// Otherwise let the event pass through to the children
+		//handleTouch();
+
 		return false;
+	}
+
+	private void handleTouch() {
+		// If there has been a down and and up
+		if (mTouchDown != null && mTouchUp != null) {
+			// If the touch event has been for a short time
+			if (mTouchUp.getEventTime() -
+				mTouchDown.getEventTime() < 500 &&
+				mTouchUp.getEventTime() >
+				mTouchDown.getEventTime())
+			{
+				// Capture the event
+				Log.w(TAG, "down and then up was short");
+
+				((CountingLand) mContext).increment();
+				//return true;
+			} else {
+				// Find which child was dwell-clicked
+				//mTouchDown.getY();
+
+				// Generate dwell click on child
+			}
+
+			// Reset the mTouchDown and mTouchUp events
+			mTouchDown = null;
+			mTouchUp = null;
+		}
 	}
 }

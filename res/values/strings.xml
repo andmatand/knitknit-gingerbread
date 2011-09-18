@@ -16,4 +16,7 @@
     <!-- CountingLand -->
     <string name="countingland_title">counting land</string>
 
+    <!-- Counter -->
+    <string name="counter_edit">Edit</string>
+    <string name="counter_delete">Delete</string>
 </resources>
