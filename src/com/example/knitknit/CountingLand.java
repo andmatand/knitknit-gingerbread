@@ -44,8 +44,9 @@ public class CountingLand extends Activity {
 	private Long mProjectID;
 	private DatabaseHelper mDatabaseHelper;
 	private ArrayList<Counter> mCounters;
-	private LinearLayout mWrapper;
+	private CountingLandWrapper mWrapper;
 	private LinearLayout mCounterWrapper;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,8 @@ public class CountingLand extends Activity {
 
 		// Find the wrapper view (the whole screen)
 		mWrapper =
-			(LinearLayout) findViewById(R.id.countingland_wrapper);
+			(CountingLandWrapper)
+			findViewById(R.id.countingland_wrapper);
 
 		// Add an onCLickListener to the wrapper view
 		mWrapper.setOnClickListener(new View.OnClickListener() {

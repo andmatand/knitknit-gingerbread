@@ -73,6 +73,10 @@ public class Counter {
 			(TextView) inflater.inflate(
 				R.layout.countingland_counter, null, false);
 
+		// Register the view for a context menu
+		((Activity) context).registerForContextMenu(mView);
+		mView.setClickable(false);
+
 		// Fill mView with its current contents
 		render();
 
