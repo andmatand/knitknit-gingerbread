@@ -91,7 +91,10 @@ public class CountingLand extends Activity {
 			(CountingLandWrapper)
 			findViewById(R.id.countingland_wrapper);
 
+		Log.w(TAG, "mWrapper: " + mWrapper);
+
 		// Add an onCLickListener to the wrapper view
+		/*
 		mWrapper.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -99,6 +102,7 @@ public class CountingLand extends Activity {
 				increment();
 			}
 		});
+		*/
 
 		// Find the counter wrapper view
 		mCounterWrapper =
@@ -213,4 +217,53 @@ public class CountingLand extends Activity {
 		menu.add(0, MENU_DELETE, 0, R.string.counter_delete);
 	}
 
+	private Counter findCounterByYPosition(float y) {
+		// Loop through each counter
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+
+			// Get the counter's y position
+			int couterY = c.getY();
+
+			// If y overlaps with this counter
+			if (y >= (float) c.getY() &&
+				y <= (float) c.getY() + (c.getHeight() - 1))
+			{
+				return c;
+			}
+		}
+
+		return null;
+	}
+
+	public void pushCounter(float y) {
+		Counter c = findCounterByYPosition(y);
+		if (c == null) return;
+
+		// If the counter is not currently being pushed (not currently
+		// highlighted)
+		if (!c.getHighlighted()) {
+			// Highlight it
+			c.highlight();
+		} else {
+			// Otherwise perform a longClick
+			c.longClick();
+		}
+	}
+
+	public void longClickCounter(float y) {
+		Counter c = findCounterByYPosition(y);
+		
+		if (c != null)
+			c.longClick();
+	}
+
+	/*
+	public void highlightCounter(float y) {
+		Counter c = findCounterByYPosition(y);
+		
+		if (c != null)
+			c.highlight();
+	}
+	*/
 }

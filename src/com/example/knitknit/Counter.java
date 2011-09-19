@@ -46,6 +46,7 @@ public class Counter {
 	private int mPatternLength;
 
 	private TextView mView;
+	private boolean mPressed = false;
 	private DatabaseHelper mDatabaseHelper;
 
 	Counter(Context context, Cursor cursor) {
@@ -93,12 +94,27 @@ public class Counter {
 		mDatabaseHelper.open();
 	}
 
-	long getID() {
+	public long getID() {
 		return mID;
 	}
 
-	int getValue() {
+	public int getValue() {
 		return mValue;
+	}
+
+	public int getY() {
+		// Create an array of two integers
+		int[] xy = new int[2];
+
+		// Fill the array the the x and y coordinates
+		mView.getLocationOnScreen(xy);
+
+		// Return the y coordinate
+		return xy[1];
+	}
+
+	public int getHeight() {
+		return mView.getHeight();
 	}
 
 	// Adds or subtracts 1, depending on countUp setting
@@ -122,9 +138,28 @@ public class Counter {
 		render();
 	}
 
+	public void longClick() {
+		mView.performLongClick();
+		mPressed = false;
+	}
+
+	// Highlight the counter to show user that a longClick is imminent
+	public void highlight() {
+		// mView.setPressed(true);
+		Log.w(TAG, "mView: " + mView);
+		Log.w(TAG, "mView text: " + mView.getText());
+		mView.setTextColor(R.color.counter_pressed);
+		mPressed = true;
+	}
+
+	public boolean getHighlighted() {
+		return mPressed;
+	}
+
 	public void render() {
 		// Update the TextView with the counter's current value
 		mView.setText(String.valueOf(this.getValue()));
+		mView.setTextColor(R.color.counter);
 	}
 
 	public void setSize(int size) {

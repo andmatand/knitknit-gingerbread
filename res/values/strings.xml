@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">knit knit</string>
+<string name="app_name">knit knit</string>
 
-    <!-- ProjectList -->
-    <string name="projectlist_vacant">Press menu to add a new project</string>
-    <string name="projectlist_add">Add new project</string>
-    <string name="projectlist_delete">Delete</string>
-    <string name="projectlist_rename">Rename</string>
-    <string name="projectlist_namedialog_title_create">New Project</string>
-    <string name="projectlist_namedialog_title_rename">Rename Project</string>
-    <string name="projectlist_namedialog_hint">Name</string>
-    <string name="projectlist_namedialog_create">Create</string>
-    <string name="projectlist_namedialog_rename">That’s better</string>
+<!-- ProjectList -->
+<string name="projectlist_vacant">Press menu to add a new project</string>
+<string name="projectlist_add">Add new project</string>
+<string name="projectlist_delete">Delete</string>
+<string name="projectlist_rename">Rename</string>
+<string name="projectlist_namedialog_title_create">New Project</string>
+<string name="projectlist_namedialog_title_rename">Rename Project</string>
+<string name="projectlist_namedialog_hint">Name</string>
+<string name="projectlist_namedialog_create">Create</string>
+<string name="projectlist_namedialog_rename">That’s better</string>
 
-    <!-- CountingLand -->
-    <string name="countingland_title">counting land</string>
+<!-- CountingLand -->
+<string name="countingland_title">counting land</string>
 
-    <!-- Counter -->
-    <string name="counter_edit">Edit</string>
-    <string name="counter_delete">Delete</string>
+<!-- Counter -->
+<string name="counter_edit">Edit</string>
+<string name="counter_delete">Delete</string>
 </resources>
