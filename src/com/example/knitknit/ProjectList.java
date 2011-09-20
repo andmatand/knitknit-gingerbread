@@ -75,8 +75,9 @@ public class ProjectList extends ListActivity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus)
+		if (hasFocus) {
 			fillList();
+		}
 	}
 
 	/* Context Menu ******************************************************/
@@ -232,13 +233,6 @@ public class ProjectList extends ListActivity {
 		// Get a cursor over a list of all projects
 		Cursor cursor = mDatabaseHelper.fetchProjects();
 		startManagingCursor(cursor);
-
-		//cursor.moveToFirst();
-		/*
-		Log.w(TAG, "project title: " + cursor.getString(
-			cursor.getColumnIndexOrThrow(
-				DatabaseHelper.PROJECT_KEY_NAME)));
-				*/
 
 		// Create an array to specify the fields we want to display in
 		// the list

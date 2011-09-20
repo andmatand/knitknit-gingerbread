@@ -201,8 +201,10 @@ public class CountingLand extends Activity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus)
+		if (hasFocus) {
 			sizeCounters();
+			refreshCounters();
+		}
 	}
 
 	@Override
@@ -222,10 +224,8 @@ public class CountingLand extends Activity {
 
 		switch(item.getItemId()) {
 		case MENU_EDIT:
-			refreshCounters();
 			return true;
 		case MENU_DELETE:
-			refreshCounters();
 			return true;
 		}
 
