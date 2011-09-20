@@ -37,6 +37,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
@@ -174,11 +175,7 @@ public class CountingLand extends Activity {
 		getWindow().setTitle(
 			mDatabaseHelper.getProjectName(mProjectID));
 
-		// Set text of counter views
-		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
-			Counter c = (Counter) it.next();
-			c.render();
-		}
+		refreshCounters();
 	}
 
 	// Adds (or subtracts, depending on counter setting) to all counters
@@ -217,6 +214,24 @@ public class CountingLand extends Activity {
 		menu.add(0, MENU_DELETE, 0, R.string.counter_delete);
 	}
 
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// Get info for the selected list item
+		AdapterContextMenuInfo info =
+			(AdapterContextMenuInfo) item.getMenuInfo();
+
+		switch(item.getItemId()) {
+		case MENU_EDIT:
+			refreshCounters();
+			return true;
+		case MENU_DELETE:
+			refreshCounters();
+			return true;
+		}
+
+		return super.onContextItemSelected(item);
+	}
+
 	private Counter findCounterByYPosition(float y) {
 		// Loop through each counter
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
@@ -236,9 +251,10 @@ public class CountingLand extends Activity {
 		return null;
 	}
 
-	public void pushCounter(float y) {
+	/*
+	public boolean pushCounter(float y) {
 		Counter c = findCounterByYPosition(y);
-		if (c == null) return;
+		if (c == null) return true;
 
 		// If the counter is not currently being pushed (not currently
 		// highlighted)
@@ -248,22 +264,30 @@ public class CountingLand extends Activity {
 		} else {
 			// Otherwise perform a longClick
 			c.longClick();
+			return true;
 		}
+
+		return false;
 	}
+	*/
 
 	public void longClickCounter(float y) {
 		Counter c = findCounterByYPosition(y);
 		
-		if (c != null)
-			c.longClick();
+		if (c != null) c.longClick();
 	}
 
-	/*
 	public void highlightCounter(float y) {
 		Counter c = findCounterByYPosition(y);
 		
-		if (c != null)
-			c.highlight();
+		if (c != null) c.highlight();
 	}
-	*/
+
+	public void refreshCounters() {
+		// Set text of counter views, and reset to default color
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.refresh();
+		}
+	}
 }

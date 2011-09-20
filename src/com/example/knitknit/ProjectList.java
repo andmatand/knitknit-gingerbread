@@ -52,9 +52,9 @@ public class ProjectList extends ListActivity {
 	private static final int ACTIVITY_VIEW = 1;
 
 	private DatabaseHelper mDatabaseHelper;
-	private static final int OPTIONS_ADD = Menu.FIRST;
-	private static final int CONTEXT_DELETE = Menu.FIRST + 1;
-	private static final int CONTEXT_RENAME = Menu.FIRST + 2;
+	private static final int MENU_ADD = Menu.FIRST;
+	private static final int MENU_DELETE = Menu.FIRST + 1;
+	private static final int MENU_RENAME = Menu.FIRST + 2;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,8 +85,8 @@ public class ProjectList extends ListActivity {
 		ContextMenuInfo menuInfo)
 	{
 		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(0, CONTEXT_DELETE, 0, R.string.projectlist_delete);
-		menu.add(0, CONTEXT_RENAME, 0, R.string.projectlist_rename);
+		menu.add(0, MENU_DELETE, 0, R.string.projectlist_delete);
+		menu.add(0, MENU_RENAME, 0, R.string.projectlist_rename);
 	}
 
 	@Override
@@ -96,11 +96,11 @@ public class ProjectList extends ListActivity {
 			(AdapterContextMenuInfo) item.getMenuInfo();
 
 		switch(item.getItemId()) {
-		case CONTEXT_DELETE:
+		case MENU_DELETE:
 			deleteProject(info.id);
 			fillList();
 			return true;
-		case CONTEXT_RENAME:
+		case MENU_RENAME:
 			renameProject(info.id,
 				(String)
 				((TextView) info.targetView.findViewById(
@@ -123,14 +123,14 @@ public class ProjectList extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, OPTIONS_ADD, 0, R.string.projectlist_add);
+		menu.add(0, MENU_ADD, 0, R.string.projectlist_add);
 		return true;
 	}
 
 	@Override
 	public boolean onMenuItemSelected(int featureID, MenuItem item) {
 		switch(item.getItemId()) {
-		case OPTIONS_ADD:
+		case MENU_ADD:
 			createProject();
 			return true;
 		}

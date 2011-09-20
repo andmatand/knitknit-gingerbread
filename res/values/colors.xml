@@ -2,5 +2,5 @@
 <resources>
 	<!-- Counter -->
 	<color name="counter">#ffffffff</color>
-	<color name="counter_pressed">#ff666666</color>
+	<color name="counter_pressed">#ffff55aa</color>
 </resources>

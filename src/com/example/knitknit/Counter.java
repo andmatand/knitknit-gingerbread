@@ -29,6 +29,7 @@ package com.example.knitknit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class Counter {
 	private int mPatternLength;
 
 	private TextView mView;
+	private Resources mResources;
 	private boolean mPressed = false;
 	private DatabaseHelper mDatabaseHelper;
 
@@ -78,8 +80,12 @@ public class Counter {
 		((Activity) context).registerForContextMenu(mView);
 		mView.setClickable(false);
 
+		// Get the resources (for setting text colors)
+		mResources = context.getResources();
+		Log.w(TAG, "mResources: " + mResources);
+
 		// Fill mView with its current contents
-		render();
+		refresh();
 
 		// Find the parent view
 		LinearLayout parentView =
@@ -135,20 +141,35 @@ public class Counter {
 			}
 		}
 
-		render();
+		refresh();
 	}
 
 	public void longClick() {
-		mView.performLongClick();
+		// Use the post method so it runs in the main UI thread intead
+		// of the timer thread
+		mView.post(new Runnable() {
+			public void run() {
+				mView.performLongClick();
+			}
+		});
+
 		mPressed = false;
 	}
 
 	// Highlight the counter to show user that a longClick is imminent
 	public void highlight() {
-		// mView.setPressed(true);
-		Log.w(TAG, "mView: " + mView);
-		Log.w(TAG, "mView text: " + mView.getText());
-		mView.setTextColor(R.color.counter_pressed);
+		// Use the post method so it runs in the main UI thread intead
+		// of the timer thread
+		mView.post(new Runnable() {
+			public void run() {
+				// mView.setPressed(true);
+
+				// Set the color
+				mView.setTextColor(
+				mResources.getColor(R.color.counter_pressed));
+			}
+		});
+
 		mPressed = true;
 	}
 
@@ -156,10 +177,20 @@ public class Counter {
 		return mPressed;
 	}
 
-	public void render() {
-		// Update the TextView with the counter's current value
-		mView.setText(String.valueOf(this.getValue()));
-		mView.setTextColor(R.color.counter);
+	public void refresh() {
+		// Use the post method so it runs in the main UI thread intead
+		// of the timer thread
+		mView.post(new Runnable() {
+			public void run() {
+				// Update the TextView with the counter's
+				// current value
+				mView.setText(String.valueOf(mValue));
+
+				// Set the color
+				mView.setTextColor(
+					mResources.getColor(R.color.counter));
+			}
+		});
 	}
 
 	public void setSize(int size) {

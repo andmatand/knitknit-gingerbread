@@ -43,20 +43,15 @@ public class CountingLandWrapper extends LinearLayout {
 	protected MotionEvent mTouchDown = null;
 	protected MotionEvent mTouchUp = null;
 	private Timer mTouchTimer;
-	private boolean mLongClick = false;
+	private boolean mHighlightedCounter = false;
+
+	// 0 = not clicking, 1 = holding
+	private int clickStep = 0;
 
 	public CountingLandWrapper(Context context) {
 		super(context);
 		mContext = context;
 		this.setClickable(true);
-
-		this.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				Log.w(TAG, "in onTouch");
-				return false;
-			}
-		});
 	}
 
 	public CountingLandWrapper(Context context, AttributeSet attrs) {
@@ -71,7 +66,7 @@ public class CountingLandWrapper extends LinearLayout {
 			case MotionEvent.ACTION_DOWN:
 				Log.w(TAG, "intercepted down event");
 				mTouchDown = MotionEvent.obtain(event);
-				mLongClick = false;
+				mHighlightedCounter = false;
 
 				// Set a timer callback to check if the
 				// touch is still being held down
@@ -95,50 +90,16 @@ public class CountingLandWrapper extends LinearLayout {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		// Exit if we haven't had a touch down event from
-		// onInterceptTouchEvent or if we have just finished performing
-		// a longclick
-		if (mTouchDown == null || mLongClick) return true;
+		// onInterceptTouchEvent
+		if (mTouchDown == null) return true;
 
 		Log.w(TAG, "in onTouchEvent");
 
 		switch(event.getAction()) {
-		/*
-		case MotionEvent.ACTION_MOVE:
-			Log.w(TAG, "got move event");
-
-			// If the touch has lasted a little longer than
-			// normal
-			if (event.getEventTime() -
-				mTouchDown.getEventTime() >= 250)
-			{
-				// Change the color of the counter which
-			       	// overlaps with the touch-event's y-position
-				((CountingLand) mContext).highlightCounter(
-					event.getY());
-			}
-
-			// If the touch has lasted long enough
-			if (event.getEventTime() -
-				mTouchDown.getEventTime() >= 500)
-			{
-				// Perform long-click on child view
-				mLongClick = true;
-				Log.w(TAG, "long-click");
-
-				// Perform long-click on the counter which
-				// overlaps with the touch-event's y-position
-				((CountingLand) mContext).longClickCounter(
-					event.getY());
-
-				// Finish touchEvent
-				mTouchDown = null;
-				return false;
-			}
-			break;
-			*/
 		case MotionEvent.ACTION_UP:
 			Log.w(TAG, "got up event");
-			// Increment the counters
+
+			// Increment all counters
 			((CountingLand) mContext).increment();
 
 			// Reset the touchDown event
@@ -158,16 +119,26 @@ public class CountingLandWrapper extends LinearLayout {
 		if (mTouchDown != null) {
 			Log.w(TAG, "pushing counter...");
 
-			((CountingLand) mContext).
-				pushCounter(mTouchDown.getY());
+			if (mHighlightedCounter == false) {
+				((CountingLand) mContext).
+					highlightCounter(mTouchDown.getY());
+				mHighlightedCounter = true;
+			} else {
+				((CountingLand) mContext).
+					longClickCounter(mTouchDown.getY());
+				mTouchDown = null;
 
-			// Allow timer to continue
-			//return true;
+				Log.w(TAG, "canceling timer");
+				mTouchTimer.cancel();
+			}
 		} else {
+			// The touch is no longer being held down; stop the
+			// timer
+			Log.w(TAG, "canceling timer");
 			mTouchTimer.cancel();
-		}
 
-		// The touch is no longer being held down; stop the timer
-		//return false;
+			// Un-highlight all counters
+			((CountingLand) mContext).refreshCounters();
+		}
 	}
 }
