@@ -62,7 +62,8 @@ public class CountingLand extends Activity {
 
 	// Context menu
 	private static final int MENU_EDIT = Menu.FIRST;
-	private static final int MENU_DELETE = Menu.FIRST + 1;
+	private static final int MENU_COUNTER_DECREASE = Menu.FIRST + 1;
+	private static final int MENU_DELETE = Menu.FIRST + 2;
 
 	/* Activity Lifecycle ************************************************/
 	@Override
@@ -315,7 +316,12 @@ public class CountingLand extends Activity {
 		ContextMenuInfo menuInfo)
 	{
 		super.onCreateContextMenu(menu, v, menuInfo);
+
 		menu.add(0, MENU_EDIT, 0, R.string.counter_edit);
+		menu.add(0, MENU_COUNTER_DECREASE, 0,
+			R.string.counter_decrease);
+
+		// Only show delete button if there is more than 1 counter
 		if (mCounters.size() > 1) {
 			menu.add(0, MENU_DELETE, 0, R.string.counter_delete);
 		}
@@ -329,6 +335,9 @@ public class CountingLand extends Activity {
 
 		switch(item.getItemId()) {
 		case MENU_EDIT:
+			return true;
+		case MENU_COUNTER_DECREASE:
+			mSelectedCounter.decrement();
 			return true;
 		case MENU_DELETE:
 			deleteCounter(mSelectedCounter);
