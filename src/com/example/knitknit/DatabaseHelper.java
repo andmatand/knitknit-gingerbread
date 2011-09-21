@@ -193,13 +193,28 @@ public class DatabaseHelper {
 	}
 
 	public boolean deleteProject(long projectID) {
+		// Get a cursor over the list of counters in this project
+		Cursor cursor = fetchCounters(projectID);
+
+		// Delete each counter
+		do {
+			if (!deleteCounter(cursor.getLong(
+				cursor.getColumnIndexOrThrow(COUNTER_KEY_ID)))) 
+			{
+				return false;
+			}
+
+		} while (cursor.moveToNext());
+		cursor.close();
+
+		// Delete the project
 		return mDB.delete(
 			PROJECT_TABLE,
 			PROJECT_KEY_ID + "=" + projectID,
 			null) > 0;
 	}
 
-	public boolean renameProject(Long projectID, String name) {
+	public boolean renameProject(long projectID, String name) {
 		ContentValues args = new ContentValues();
 		args.put(PROJECT_KEY_NAME, name);
 
@@ -228,13 +243,6 @@ public class DatabaseHelper {
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
-
-		// TEMP hack to add a second counter
-		/*
-		if (cursor.getCount() < 2) {
-			insertCounter(projectID);
-		}
-		*/
 
 		if (cursor.getCount() == 0) {
 			Log.w(TAG, "counterCursor was empty");

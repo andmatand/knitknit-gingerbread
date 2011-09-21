@@ -15,6 +15,9 @@
 
 <!-- CountingLand -->
 <string name="countingland_title">counting land</string>
+<string name="countingland_add">Add New Counter</string>
+<string name="countingland_decrease">Decrease</string>
+<string name="countingland_reset">Reset</string>
 
 <!-- Counter -->
 <string name="counter_edit">Edit</string>

@@ -52,9 +52,19 @@ public class CountingLand extends Activity {
 	private CountingLandWrapper mWrapper;
 	private LinearLayout mCounterWrapper;
 
+	// The counter whose context menu is open
+	private Counter mSelectedCounter;
+
+	// Options menu
+	private static final int MENU_ADD = Menu.FIRST + 10;
+	private static final int MENU_DECREASE = Menu.FIRST + 11;
+	private static final int MENU_RESET = Menu.FIRST + 12;
+
+	// Context menu
 	private static final int MENU_EDIT = Menu.FIRST;
 	private static final int MENU_DELETE = Menu.FIRST + 1;
 
+	/* Activity Lifecycle ************************************************/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -93,17 +103,6 @@ public class CountingLand extends Activity {
 			findViewById(R.id.countingland_wrapper);
 
 		Log.w(TAG, "mWrapper: " + mWrapper);
-
-		// Add an onCLickListener to the wrapper view
-		/*
-		mWrapper.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.w(TAG, "tapped");
-				increment();
-			}
-		});
-		*/
 
 		// Find the counter wrapper view
 		mCounterWrapper =
@@ -144,13 +143,73 @@ public class CountingLand extends Activity {
 	}
 
 	private void saveState() {
-		// Save all the counters to the database
+		saveCounters();
+	}
+
+	/* Single Counter functions ******************************************/
+	private void addCounter() {
+		// Save all current counters
+		saveCounters();
+
+		mDatabaseHelper.insertCounter(mProjectID);
+
+		// Reload all counters from database
+		loadCounters();
+
+		// Redraw all counters
+		refreshCounters();
+	}
+
+	public void deleteCounter(Counter c) {
+		// Delete counter from database
+		c.delete();
+
+		// Delete counter object
+		mCounters.remove(c);
+
+		/*
+		// Redraw all counters
+		sizeCounters();
+		refreshCounters();
+		*/
+	}
+
+	private Counter findCounterByYPosition(float y) {
+		// Loop through each counter
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
-			c.saveState();
+
+			// Get the counter's y position
+			int couterY = c.getY();
+
+			// If y overlaps with this counter
+			if (y >= (float) c.getY() &&
+				y <= (float) c.getY() + (c.getHeight() - 1))
+			{
+				return c;
+			}
+		}
+
+		return null;
+	}
+
+	public void highlightCounter(float y) {
+		Counter c = findCounterByYPosition(y);
+		
+		if (c != null) c.highlight();
+	}
+
+	public void longClickCounter(float y) {
+		Counter c = findCounterByYPosition(y);
+		
+		if (c != null) {
+			mSelectedCounter = c;
+			c.longClick();
 		}
 	}
 
+
+	/* Aggregate Counter functions ***************************************/
 	private void loadCounters() {
 		// Remove any previous counter views
 		mCounterWrapper.removeAllViews();
@@ -170,6 +229,14 @@ public class CountingLand extends Activity {
 		counterCursor.close();
 	}
 
+	private void saveCounters() {
+		// Save all the counters to the database
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.saveState();
+		}
+	}
+
 	private void fillData() {
 		// Set activity title to project name
 		getWindow().setTitle(
@@ -183,6 +250,14 @@ public class CountingLand extends Activity {
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
 			c.increment();
+		}
+	}
+
+	// Adds (or subtracts, depending on counter setting) to all counters
+	public void decrement() {
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.decrement();
 		}
 	}
 
@@ -207,13 +282,43 @@ public class CountingLand extends Activity {
 		}
 	}
 
+	/* Options Menu ******************************************************/
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, MENU_ADD, 0, R.string.countingland_add);
+		menu.add(0, MENU_DECREASE, 0, R.string.countingland_decrease);
+		menu.add(0, MENU_RESET, 0, R.string.countingland_reset);
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureID, MenuItem item) {
+		switch(item.getItemId()) {
+		case MENU_ADD:
+			addCounter();
+			return true;
+		case MENU_DECREASE:
+			decrement();
+			return true;
+		case MENU_RESET:
+			resetCounters();
+			return true;
+		}
+
+		return super.onMenuItemSelected(featureID, item);
+	}
+
+	/* Context Menu ******************************************************/
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 		ContextMenuInfo menuInfo)
 	{
 		super.onCreateContextMenu(menu, v, menuInfo);
 		menu.add(0, MENU_EDIT, 0, R.string.counter_edit);
-		menu.add(0, MENU_DELETE, 0, R.string.counter_delete);
+		if (mCounters.size() > 1) {
+			menu.add(0, MENU_DELETE, 0, R.string.counter_delete);
+		}
 	}
 
 	@Override
@@ -226,68 +331,29 @@ public class CountingLand extends Activity {
 		case MENU_EDIT:
 			return true;
 		case MENU_DELETE:
+			deleteCounter(mSelectedCounter);
 			return true;
 		}
 
 		return super.onContextItemSelected(item);
 	}
 
-	private Counter findCounterByYPosition(float y) {
-		// Loop through each counter
-		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
-			Counter c = (Counter) it.next();
-
-			// Get the counter's y position
-			int couterY = c.getY();
-
-			// If y overlaps with this counter
-			if (y >= (float) c.getY() &&
-				y <= (float) c.getY() + (c.getHeight() - 1))
-			{
-				return c;
-			}
-		}
-
-		return null;
-	}
-
-	/*
-	public boolean pushCounter(float y) {
-		Counter c = findCounterByYPosition(y);
-		if (c == null) return true;
-
-		// If the counter is not currently being pushed (not currently
-		// highlighted)
-		if (!c.getHighlighted()) {
-			// Highlight it
-			c.highlight();
-		} else {
-			// Otherwise perform a longClick
-			c.longClick();
-			return true;
-		}
-
-		return false;
-	}
-	*/
-
-	public void longClickCounter(float y) {
-		Counter c = findCounterByYPosition(y);
-		
-		if (c != null) c.longClick();
-	}
-
-	public void highlightCounter(float y) {
-		Counter c = findCounterByYPosition(y);
-		
-		if (c != null) c.highlight();
-	}
-
 	public void refreshCounters() {
+		// Deselect the currently selected counter
+		mSelectedCounter = null;
+
 		// Set text of counter views, and reset to default color
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
 			c.refresh();
+		}
+	}
+
+	private void resetCounters() {
+		// Reset all counters to 0
+		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
+			Counter c = (Counter) it.next();
+			c.setValue(0);
 		}
 	}
 }

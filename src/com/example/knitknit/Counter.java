@@ -100,6 +100,15 @@ public class Counter {
 		mDatabaseHelper.open();
 	}
 
+	/* Simple Accessor methods *******************************************/
+	public int getHeight() {
+		return mView.getHeight();
+	}
+
+	public boolean getHighlighted() {
+		return mPressed;
+	}
+
 	public long getID() {
 		return mID;
 	}
@@ -119,12 +128,17 @@ public class Counter {
 		return xy[1];
 	}
 
-	public int getHeight() {
-		return mView.getHeight();
+	public void setValue(int value) {
+		mValue = value;
 	}
 
-	// Adds or subtracts 1, depending on countUp setting
+	public void setSize(int size) {
+		mView.setTextSize(size);
+	}
+
+	/* Other Methods *****************************************************/
 	public void increment() {
+		// Add or subtract 1, depending on countUp setting
 		if (mCountUp) {
 			mValue++;
 			if (mPatternOn) {
@@ -144,6 +158,27 @@ public class Counter {
 		refresh();
 	}
 
+	public void decrement() {
+		// Subtract or add 1, depending on countUp setting
+		if (mCountUp) {
+			mValue--;
+			if (mPatternOn) {
+				if (mValue < 0) {
+					mValue = mPatternLength - 1;
+				}
+			}
+		} else {
+			mValue++;
+			if (mPatternOn) {
+				if (mValue > mPatternLength - 1) {
+					mValue = 0;
+				}
+			}
+		}
+
+		refresh();
+	}
+
 	public void longClick() {
 		// Use the post method so it runs in the main UI thread intead
 		// of the timer thread
@@ -156,8 +191,10 @@ public class Counter {
 		mPressed = false;
 	}
 
-	// Highlight the counter to show user that a longClick is imminent
 	public void highlight() {
+		// Highlight the counter to show user that a longClick is
+		// imminent
+
 		// Use the post method so it runs in the main UI thread intead
 		// of the timer thread
 		mView.post(new Runnable() {
@@ -171,10 +208,6 @@ public class Counter {
 		});
 
 		mPressed = true;
-	}
-
-	public boolean getHighlighted() {
-		return mPressed;
 	}
 
 	public void refresh() {
@@ -193,12 +226,16 @@ public class Counter {
 		});
 	}
 
-	public void setSize(int size) {
-		mView.setTextSize(size);
-	}
-
 	public void saveState() {
 		// Save the current value in the database
 		mDatabaseHelper.updateCounter(getID(), getValue());
+	}
+
+	public void delete() {
+		// Delete the counter from the database
+		mDatabaseHelper.deleteCounter(mID);
+
+		// Delete the view
+		((LinearLayout) mView.getParent()).removeView(mView);
 	}
 }

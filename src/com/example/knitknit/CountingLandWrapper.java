@@ -76,7 +76,7 @@ public class CountingLandWrapper extends LinearLayout {
 						public void run() {
 							checkTouch();
 						}
-					}, 200, 250);
+					}, 250, 250);
 
 				// Intercept the event
 				return true;
@@ -99,8 +99,14 @@ public class CountingLandWrapper extends LinearLayout {
 		case MotionEvent.ACTION_UP:
 			Log.w(TAG, "got up event");
 
-			// Increment all counters
-			((CountingLand) mContext).increment();
+			// If a counter is not currently highlighted
+			if (!mHighlightedCounter) {
+				// Increment all counters
+				((CountingLand) mContext).increment();
+			} else {
+				// Redraw all counters
+				((CountingLand) mContext).refreshCounters();
+			}
 
 			// Reset the touchDown event
 			mTouchDown = null;
