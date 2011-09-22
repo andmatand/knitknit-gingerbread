@@ -62,8 +62,9 @@ public class CountingLand extends Activity {
 
 	// Context menu
 	private static final int MENU_EDIT = Menu.FIRST;
-	private static final int MENU_COUNTER_DECREASE = Menu.FIRST + 1;
-	private static final int MENU_DELETE = Menu.FIRST + 2;
+	private static final int MENU_COUNTER_INCREASE = Menu.FIRST + 1;
+	private static final int MENU_COUNTER_DECREASE = Menu.FIRST + 2;
+	private static final int MENU_DELETE = Menu.FIRST + 3;
 
 	/* Activity Lifecycle ************************************************/
 	@Override
@@ -187,6 +188,11 @@ public class CountingLand extends Activity {
 			if (y >= (float) c.getY() &&
 				y <= (float) c.getY() + (c.getHeight() - 1))
 			{
+				Log.w(TAG, "Counter value: " + c.getValue());
+				Log.w(TAG, "Counter y1: " + c.getY());
+				Log.w(TAG, "Counter y2: " +
+					(c.getY() + c.getHeight()));
+				Log.w(TAG, "Touch y: " + y);
 				return c;
 			}
 		}
@@ -318,6 +324,8 @@ public class CountingLand extends Activity {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		menu.add(0, MENU_EDIT, 0, R.string.counter_edit);
+		menu.add(0, MENU_COUNTER_INCREASE, 0,
+			R.string.counter_increase);
 		menu.add(0, MENU_COUNTER_DECREASE, 0,
 			R.string.counter_decrease);
 
@@ -335,6 +343,9 @@ public class CountingLand extends Activity {
 
 		switch(item.getItemId()) {
 		case MENU_EDIT:
+			return true;
+		case MENU_COUNTER_INCREASE:
+			mSelectedCounter.increment();
 			return true;
 		case MENU_COUNTER_DECREASE:
 			mSelectedCounter.decrement();

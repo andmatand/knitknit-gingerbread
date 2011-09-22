@@ -145,13 +145,13 @@ public class ProjectList extends ListActivity {
 
 	// Overloaded version for creating only
 	private void showNameDialog() {
-		showNameDialog(null, null);
+		showNameDialog(-1, null);
 	}
 
 	// @projectID
-	//	-If null, we are creating a project
-	//	-If a number, we are renaming the project with this projectID
-	private void showNameDialog(final Long projectID, String currentName) {
+	//	-If -1, we are creating a project
+	//	-If >= 0, we are renaming the project with this projectID
+	private void showNameDialog(final long projectID, String currentName) {
 		// Instantiate a view of projectlist_namedialog.xml
 		LayoutInflater inflater = (LayoutInflater)
 			this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -170,7 +170,7 @@ public class ProjectList extends ListActivity {
 		DialogInterface.OnClickListener listener =
 			new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				if (projectID == null) {
+				if (projectID == -1) {
 					mDatabaseHelper.insertProject(
 						name.getText().toString());
 					fillList();
@@ -188,11 +188,11 @@ public class ProjectList extends ListActivity {
 			new AlertDialog.Builder(this);
 		nameDialog.setCancelable(true);
 		nameDialog.setTitle(
-			(projectID == null ?
+			(projectID == -1 ?
 			R.string.projectlist_namedialog_title_create :
 			R.string.projectlist_namedialog_title_rename));
 		nameDialog.setPositiveButton(
-			(projectID == null ?
+			(projectID == -1 ?
 				R.string.projectlist_namedialog_create :
 				R.string.projectlist_namedialog_rename),
 			listener);

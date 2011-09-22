@@ -66,6 +66,8 @@ public class CountingLandWrapper extends LinearLayout {
 			case MotionEvent.ACTION_DOWN:
 				Log.w(TAG, "intercepted down event");
 				mTouchDown = MotionEvent.obtain(event);
+				Log.w(TAG, "Touch y: " + mTouchDown.getY());
+				Log.w(TAG, "Raw y: " + mTouchDown.getRawY());
 				mHighlightedCounter = false;
 
 				// Set a timer callback to check if the
@@ -127,11 +129,11 @@ public class CountingLandWrapper extends LinearLayout {
 
 			if (mHighlightedCounter == false) {
 				((CountingLand) mContext).
-					highlightCounter(mTouchDown.getY());
+					highlightCounter(mTouchDown.getRawY());
 				mHighlightedCounter = true;
 			} else {
 				((CountingLand) mContext).
-					longClickCounter(mTouchDown.getY());
+					longClickCounter(mTouchDown.getRawY());
 				mTouchDown = null;
 
 				Log.w(TAG, "canceling timer");

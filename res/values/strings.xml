@@ -21,6 +21,7 @@
 
 <!-- Counter -->
 <string name="counter_edit">Edit</string>
+<string name="counter_increase">Increase</string>
 <string name="counter_decrease">Decrease</string>
 <string name="counter_delete">Delete</string>
 </resources>
