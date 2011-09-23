@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<!-- Counter -->
-	<color name="counter">#ffffffff</color>
-	<color name="counter_pressed">#ffff55aa</color>
+	<color name="counter">#fffffae0</color>
+	<color name="counter_pressed">#ffed7575</color>
+
+	<!-- Counting Land -->
+	<color name="countingland_bg">#333</color>
 </resources>
