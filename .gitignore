@@ -1,3 +1,5 @@
 *.swp
 bin/
 gen/
+build.xml
+local.properties
