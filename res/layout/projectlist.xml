@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/main"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:background="@color/projectlist_bg">
     
 	<ListView android:id="@+id/android:list"
 		android:layout_width="match_parent"
@@ -16,5 +17,6 @@
 		android:gravity="center"
 		android:typeface="monospace"
 		android:textSize="18sp"
+		android:textColor="@color/projectlist_text"
         	android:text="@string/projectlist_vacant" />
 </LinearLayout>

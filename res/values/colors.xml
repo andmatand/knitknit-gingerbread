@@ -6,4 +6,9 @@
 
 	<!-- Counting Land -->
 	<color name="countingland_bg">#333</color>
+	<color name="countingland_text">#fffffae0</color>
+
+	<!-- Project List -->
+	<color name="projectlist_bg">#333</color>
+	<color name="projectlist_text">#fffffae0</color>
 </resources>
