@@ -17,7 +17,10 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="CountingLand"
-			android:label="@string/countingland_title"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity android:name="CounterEdit"
+			android:label="@string/counteredit_label"
 			android:screenOrientation="portrait">
 		</activity>
 	</application>

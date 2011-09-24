@@ -28,12 +28,13 @@
 package com.example.knitknit;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 public class CounterEdit extends Activity {
 	private static final String TAG = "bunny-knitknit-CounterEdit";
-	private Long mCounterID;
+	private Counter mCounter;
 	private DatabaseHelper mDatabaseHelper;
 
 	/* Activity Lifecycle ************************************************/
@@ -41,33 +42,36 @@ public class CounterEdit extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Open database
-		mDatabaseHelper = new DatabaseHelper(this);
-		mDatabaseHelper.open();
-
 		setContentView(R.layout.counteredit);
 
-		// Get counter ID from savedInstanceState
-		mCounterID = (savedInstanceState == null ?
+		mCounter = CountingLand.mSelectedCounter;
+		// Get counter object from savedInstanceState
+		/*
+		mCounter = (savedInstanceState == null ?
 			null :
 			(Long) savedInstanceState.getSerializable(
 				DatabaseHelper.COUNTER_KEY_ID));
 
-		// If we still don't have the counter ID, get it from intent
-		// extras
-		if (mCounterID == null) {
+		// If we still don't have the counter object, get it from
+		// intent extras
+		if (mCounter == null) {
 			Bundle extras = getIntent().getExtras();
-			mCounterID = (extras != null ?
+			mCounter = (extras != null ?
 				extras.getLong(DatabaseHelper.COUNTER_KEY_ID) :
 				null);
 		}
+		*/
 
-		Log.w(TAG, "in onCreate, mCounterID: " + mCounterID);
+		Log.w(TAG, "in onCreate, mCounter: " + mCounter);
 
 		// If counter ID is still null, there is a problem and we need
 		// to get out of here since we can't do anything
-		if (mCounterID == null) {
+		if (mCounter == null) {
 			finish();
 		}
+
+		// Open database
+		mDatabaseHelper = new DatabaseHelper(this);
+		mDatabaseHelper.open();
 	}
 }

@@ -14,7 +14,6 @@
 <string name="projectlist_namedialog_rename">That’s better</string>
 
 <!-- CountingLand -->
-<string name="countingland_title">counting land</string>
 <string name="countingland_add">Add New Counter</string>
 <string name="countingland_decrease">Decrease</string>
 <string name="countingland_reset">Reset</string>
@@ -24,4 +23,7 @@
 <string name="counter_increase">Increase</string>
 <string name="counter_decrease">Decrease</string>
 <string name="counter_delete">Delete</string>
+
+<!-- CounterEdit -->
+<string name="counteredit_label">Edit Counter</string>
 </resources>
