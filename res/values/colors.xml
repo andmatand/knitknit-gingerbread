@@ -4,11 +4,14 @@
 	<color name="counter">#fffffae0</color>
 	<color name="counter_pressed">#ffed7575</color>
 
-	<!-- Counting Land -->
-	<color name="countingland_bg">#333</color>
+	<!-- CountingLand -->
+	<color name="countingland_bg">#222</color>
 	<color name="countingland_text">#fffffae0</color>
 
-	<!-- Project List -->
-	<color name="projectlist_bg">#333</color>
+	<!-- ProjectList -->
+	<color name="projectlist_bg">#222</color>
 	<color name="projectlist_text">#fffffae0</color>
+
+	<!-- CounterEdit -->
+	<color name="counteredit_bg">#222</color>
 </resources>
