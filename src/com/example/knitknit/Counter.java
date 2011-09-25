@@ -113,6 +113,10 @@ public class Counter {
 		return mID;
 	}
 
+	public boolean getPatternOn() {
+		return mPatternOn;
+	}
+
 	public int getValue() {
 		return mValue;
 	}
@@ -128,12 +132,16 @@ public class Counter {
 		return xy[1];
 	}
 
-	public void setValue(int value) {
-		mValue = value;
+	public void setPatternOn(boolean onOff) {
+		mPatternOn = onOff;
 	}
 
 	public void setSize(int size) {
 		mView.setTextSize(size);
+	}
+
+	public void setValue(int value) {
+		mValue = value;
 	}
 
 	/* Other Methods *****************************************************/

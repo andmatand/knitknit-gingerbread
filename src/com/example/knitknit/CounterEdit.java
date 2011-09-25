@@ -31,6 +31,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 public class CounterEdit extends Activity {
 	private static final String TAG = "bunny-knitknit-CounterEdit";
@@ -45,22 +47,6 @@ public class CounterEdit extends Activity {
 		setContentView(R.layout.counteredit);
 
 		mCounter = CountingLand.mSelectedCounter;
-		// Get counter object from savedInstanceState
-		/*
-		mCounter = (savedInstanceState == null ?
-			null :
-			(Long) savedInstanceState.getSerializable(
-				DatabaseHelper.COUNTER_KEY_ID));
-
-		// If we still don't have the counter object, get it from
-		// intent extras
-		if (mCounter == null) {
-			Bundle extras = getIntent().getExtras();
-			mCounter = (extras != null ?
-				extras.getLong(DatabaseHelper.COUNTER_KEY_ID) :
-				null);
-		}
-		*/
 
 		Log.w(TAG, "in onCreate, mCounter: " + mCounter);
 
@@ -70,8 +56,26 @@ public class CounterEdit extends Activity {
 			finish();
 		}
 
-		// Open database
-		mDatabaseHelper = new DatabaseHelper(this);
-		mDatabaseHelper.open();
+		setupUI();
+	}
+
+	private void setupUI() {
+		// Find the form elements
+		final CheckBox patternCheckBox = (CheckBox)
+			findViewById(R.id.counteredit_pattern_checkbox);
+
+		patternCheckBox.setOnCheckedChangeListener(
+			new CheckBox.OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(
+					CompoundButton v, boolean checked)
+				{
+					// Grey out text
+					Log.w(TAG, "checkbox changed");
+
+					// Enable/disable pattern mode
+					mCounter.setPatternOn(checked);
+				}
+			});
 	}
 }
