@@ -5,12 +5,12 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * 
- * 	-Redistributions of source code must retain the above copyright notice,
- * 	 this list of conditions and the following disclaimer.
+ *     1. Redistributions of source code must retain the above copyright
+ *        notice, this list of conditions and the following disclaimer.
  * 
- * 	-Redistributions in binary form must reproduce the above copyright
- * 	 notice, this list of conditions and the following disclaimer in the
- * 	 documentation and/or other materials provided with the distribution.
+ *     2. Redistributions in binary form must reproduce the above copyright
+ *        notice, this list of conditions and the following disclaimer in the
+ *        documentation and/or other materials provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -33,11 +33,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 
 public class CounterEdit extends Activity {
 	private static final String TAG = "bunny-knitknit-CounterEdit";
 	private Counter mCounter;
-	private DatabaseHelper mDatabaseHelper;
+
+	private CheckBox mPatternCheckBox;
+	private EditText mPatternNumber;
 
 	/* Activity Lifecycle ************************************************/
 	@Override
@@ -59,12 +62,28 @@ public class CounterEdit extends Activity {
 		setupUI();
 	}
 
+	@Override
+	protected void onPause() {
+		Log.w(TAG, "in onPause");
+		super.onPause();
+		saveState();
+	}
+
+	private void saveState() {
+		mCounter.setPatternLength(
+			Integer.parseInt(mPatternNumber.getText().toString()));
+	}
+
 	private void setupUI() {
-		// Find the form elements
-		final CheckBox patternCheckBox = (CheckBox)
+		// Pattern Checkbox
+		mPatternCheckBox = (CheckBox)
 			findViewById(R.id.counteredit_pattern_checkbox);
 
-		patternCheckBox.setOnCheckedChangeListener(
+		// Check/uncheck the checkbox based on the current setting
+		mPatternCheckBox.setChecked(mCounter.getPatternOn());
+
+		// Callback function for when the checkbox changes
+		mPatternCheckBox.setOnCheckedChangeListener(
 			new CheckBox.OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(
@@ -77,5 +96,14 @@ public class CounterEdit extends Activity {
 					mCounter.setPatternOn(checked);
 				}
 			});
+
+
+		// Pattern Length
+		mPatternNumber = (EditText)
+			findViewById(R.id.counteredit_pattern_number);
+
+		// Set the number based on the current setting
+		mPatternNumber.append(
+			Integer.toString(mCounter.getPatternLength()));
 	}
 }

@@ -5,12 +5,12 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * 
- * 	-Redistributions of source code must retain the above copyright notice,
- * 	 this list of conditions and the following disclaimer.
+ *     1. Redistributions of source code must retain the above copyright
+ *        notice, this list of conditions and the following disclaimer.
  * 
- * 	-Redistributions in binary form must reproduce the above copyright
- * 	 notice, this list of conditions and the following disclaimer in the
- * 	 documentation and/or other materials provided with the distribution.
+ *     2. Redistributions in binary form must reproduce the above copyright
+ *        notice, this list of conditions and the following disclaimer in the
+ *        documentation and/or other materials provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -113,6 +113,10 @@ public class Counter {
 		return mID;
 	}
 
+	public int getPatternLength() {
+		return mPatternLength;
+	}
+
 	public boolean getPatternOn() {
 		return mPatternOn;
 	}
@@ -130,6 +134,10 @@ public class Counter {
 
 		// Return the y coordinate
 		return xy[1];
+	}
+
+	public void setPatternLength(int length) {
+		mPatternLength = length;
 	}
 
 	public void setPatternOn(boolean onOff) {
@@ -225,7 +233,9 @@ public class Counter {
 			public void run() {
 				// Update the TextView with the counter's
 				// current value
-				mView.setText(String.valueOf(mValue));
+				mView.setText(String.valueOf(
+					(CountingLand.getZeroMode() ?
+					 mValue : mValue + 1)));
 
 				// Set the color
 				mView.setTextColor(
@@ -236,7 +246,11 @@ public class Counter {
 
 	public void saveState() {
 		// Save the current value in the database
-		mDatabaseHelper.updateCounter(getID(), getValue());
+		mDatabaseHelper.updateCounter(
+			mID,
+			mValue,
+			mPatternOn,
+			mPatternLength);
 	}
 
 	public void delete() {
