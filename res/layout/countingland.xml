@@ -22,13 +22,19 @@
 			android:textColor="@color/countingland_text"
 			android:text="total rows: 11" />
 	</RelativeLayout>
-
+	<ImageView
+		android:layout_width="476dp"
+		android:layout_height="72dp"
+		android:layout_marginLeft="4dp"
+		android:layout_alignParentBottom="true"
+		android:gravity="bottom"
+		android:scaleType="fitCenter"
+		android:src="@drawable/countingland_bg" />
 	<LinearLayout
 		android:id="@+id/countingland_counterwrapper"
 		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_weight="1"
 		android:gravity="center_vertical"
 		android:background="@android:color/transparent">
 	</LinearLayout>

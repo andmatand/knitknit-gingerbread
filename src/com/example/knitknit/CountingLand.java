@@ -377,6 +377,9 @@ public class CountingLand extends Activity {
 	}
 
 	public void refreshCounters() {
+		// Put counterwrapper in front of the background image
+		//mCounterWrapper.bringToFront();
+
 		// Deselect the currently selected counter
 		mSelectedCounter = null;
 
