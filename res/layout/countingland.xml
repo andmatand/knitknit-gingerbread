@@ -14,13 +14,12 @@
 			android:id="@+id/countingland_totalrows"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
+			android:layout_alignParentLeft="true"
 			android:maxLines="1"
 			android:padding="5sp"
 			android:textSize="18sp"
 			android:gravity="right"
-			android:textColor="@color/countingland_text"
-			android:text="total rows: 11" />
+			android:textColor="@color/countingland_text" />
 	</RelativeLayout>
 	<ImageView
 		android:layout_width="476dp"

@@ -49,10 +49,13 @@ public class CountingLand extends Activity {
 	private static final int ACTIVITY_EDIT = 1;
 
 	private Long mProjectID;
+	private int mTotalRows;
+
 	private DatabaseHelper mDatabaseHelper;
 	private ArrayList<Counter> mCounters;
 	private CountingLandWrapper mWrapper;
 	private LinearLayout mCounterWrapper;
+	private TextView mTotalRowsView;
 
 	// The counter whose context menu is open
 	public static Counter mSelectedCounter;
@@ -114,6 +117,14 @@ public class CountingLand extends Activity {
 				R.id.countingland_counterwrapper);
 
 		loadCounters();
+
+		// Set row-total
+		mTotalRows = mDatabaseHelper.getProjectTotalRows(mProjectID);
+
+		// Find row-total view
+		mTotalRowsView =
+			(TextView) findViewById(
+				R.id.countingland_totalrows);
 	}
 
 	@Override
@@ -148,6 +159,14 @@ public class CountingLand extends Activity {
 
 	private void saveState() {
 		saveCounters();
+		mDatabaseHelper.updateProject(mProjectID, mTotalRows);
+	}
+
+	/* Global Display ****************************************************/
+	private void refreshTotal() {
+		String label = getString(R.string.countingland_total);
+		mTotalRowsView.setText(label + " " + Integer.toString(
+			getZeroMode() ? mTotalRows : mTotalRows + 1));
 	}
 
 	/* Single Counter functions ******************************************/
@@ -170,12 +189,6 @@ public class CountingLand extends Activity {
 
 		// Delete counter object
 		mCounters.remove(c);
-
-		/*
-		// Redraw all counters
-		sizeCounters();
-		refreshCounters();
-		*/
 	}
 
 	private Counter findCounterByYPosition(float y) {
@@ -251,6 +264,9 @@ public class CountingLand extends Activity {
 		getWindow().setTitle(
 			mDatabaseHelper.getProjectName(mProjectID));
 
+		// Update total rows display
+		refreshTotal();
+
 		refreshCounters();
 	}
 
@@ -260,6 +276,9 @@ public class CountingLand extends Activity {
 			Counter c = (Counter) it.next();
 			c.increment();
 		}
+
+		mTotalRows++;
+		refreshTotal();
 	}
 
 	// Adds (or subtracts, depending on counter setting) to all counters
@@ -268,6 +287,9 @@ public class CountingLand extends Activity {
 			Counter c = (Counter) it.next();
 			c.decrement();
 		}
+
+		mTotalRows--;
+		refreshTotal();
 	}
 
 	private void sizeCounters() {
@@ -396,5 +418,9 @@ public class CountingLand extends Activity {
 			Counter c = (Counter) it.next();
 			c.setValue(0);
 		}
+		
+		// Also reset row-total
+		mTotalRows = 0;
+		refreshTotal();
 	}
 }
