@@ -17,7 +17,7 @@
 <string name="countingland_add">Add New Counter</string>
 <string name="countingland_decrease">Decrease</string>
 <string name="countingland_reset">Reset</string>
-<string name="countingland_total">total:</string>
+<string name="countingland_total">Total:</string>
 
 <!-- Counter -->
 <string name="counter_edit">Edit</string>
