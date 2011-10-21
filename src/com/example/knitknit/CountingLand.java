@@ -289,6 +289,7 @@ public class CountingLand extends Activity {
 		}
 
 		mTotalRows--;
+		if (mTotalRows < 0) mTotalRows = 0;
 		refreshTotal();
 	}
 

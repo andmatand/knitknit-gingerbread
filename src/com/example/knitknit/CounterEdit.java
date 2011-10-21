@@ -29,18 +29,22 @@ package com.example.knitknit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class CounterEdit extends Activity {
 	private static final String TAG = "bunny-knitknit-CounterEdit";
 	private Counter mCounter;
 
+	private Resources mResources;
 	private CheckBox mPatternCheckBox;
 	private EditText mPatternNumber;
+	private TextView mPatternEndText;
 
 	/* Activity Lifecycle ************************************************/
 	@Override
@@ -58,6 +62,8 @@ public class CounterEdit extends Activity {
 		if (mCounter == null) {
 			finish();
 		}
+
+		mResources = getResources();
 
 		setupUI();
 	}
@@ -89,8 +95,10 @@ public class CounterEdit extends Activity {
 				public void onCheckedChanged(
 					CompoundButton v, boolean checked)
 				{
-					// Grey out text
 					Log.w(TAG, "checkbox changed");
+					
+					// Make text normal/dim
+					refreshPattern();
 
 					// Enable/disable pattern mode
 					mCounter.setPatternOn(checked);
@@ -105,5 +113,28 @@ public class CounterEdit extends Activity {
 		// Set the number based on the current setting
 		mPatternNumber.append(
 			Integer.toString(mCounter.getPatternLength()));
+
+		// End of pattern text (" rows")
+		mPatternEndText = (TextView)
+			findViewById(R.id.counteredit_pattern_endtext);
+
+		refreshPattern();
+	}
+
+	private void refreshPattern() {
+		// Set color to normal or dim depending on the toggle state
+		int color = mResources.getColor(
+			mPatternCheckBox.isChecked() ?
+			R.color.counteredit_text :
+			R.color.counteredit_disabled);
+
+		// Set color of checkbox text
+		mPatternCheckBox.setTextColor(color);
+
+		// Enable/disable pattern number EditText
+		mPatternNumber.setEnabled(mPatternCheckBox.isChecked());
+		
+		// Set color of end text
+		mPatternEndText.setTextColor(color);
 	}
 }
