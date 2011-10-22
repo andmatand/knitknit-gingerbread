@@ -356,6 +356,21 @@ public class CountingLand extends Activity {
 	{
 		super.onCreateContextMenu(menu, v, menuInfo);
 
+		// If the selected counter has a name
+		if (mSelectedCounter.getName().length() > 0) {
+			// Set the header to "Counter Name (value)"
+			menu.setHeaderTitle(
+				mSelectedCounter.getName() + " " + "(" +
+				Integer.toString(
+					mSelectedCounter.getDisplayValue()) +
+					")");
+		} else {
+			// Set the header to "value"
+			menu.setHeaderTitle(
+				Integer.toString(
+					mSelectedCounter.getDisplayValue()));
+		}
+
 		menu.add(0, MENU_EDIT, 0, R.string.counter_edit);
 		menu.add(0, MENU_COUNTER_INCREASE, 0,
 			R.string.counter_increase);

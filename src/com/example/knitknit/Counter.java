@@ -130,6 +130,10 @@ public class Counter {
 		return mValue;
 	}
 
+	public int getDisplayValue() {
+		return (CountingLand.getZeroMode() ? mValue : mValue + 1);
+	}
+
 	public int getY() {
 		// Create an array of two integers
 		int[] xy = new int[2];
@@ -243,8 +247,7 @@ public class Counter {
 				// Update the TextView with the counter's
 				// current value
 				mView.setText(String.valueOf(
-					(CountingLand.getZeroMode() ?
-					 mValue : mValue + 1)));
+					getDisplayValue()));
 
 				// Set the color
 				mView.setTextColor(
