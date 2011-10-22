@@ -27,4 +27,5 @@
 
 <!-- CounterEdit -->
 <string name="counteredit_label">Edit Counter</string>
+<string name="counteredit_name_hint">Name</string>
 </resources>

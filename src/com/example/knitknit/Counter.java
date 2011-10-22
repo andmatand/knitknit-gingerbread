@@ -57,6 +57,7 @@ public class Counter {
 			DatabaseHelper.COUNTER_KEY_ID));
 		mName = cursor.getString(cursor.getColumnIndexOrThrow(
 			DatabaseHelper.COUNTER_KEY_NAME));
+		if (mName == null) mName = "";
 		mValue = cursor.getInt(cursor.getColumnIndexOrThrow(
 			DatabaseHelper.COUNTER_KEY_VALUE));
 		mCountUp = cursor.getInt(cursor.getColumnIndexOrThrow(
@@ -113,6 +114,10 @@ public class Counter {
 		return mID;
 	}
 
+	public String getName() {
+		return mName;
+	}
+
 	public int getPatternLength() {
 		return mPatternLength;
 	}
@@ -134,6 +139,10 @@ public class Counter {
 
 		// Return the y coordinate
 		return xy[1];
+	}
+
+	public void setName(String name) {
+		mName = name;
 	}
 
 	public void setPatternLength(int length) {
@@ -248,6 +257,7 @@ public class Counter {
 		// Save the current value in the database
 		mDatabaseHelper.updateCounter(
 			mID,
+			mName,
 			mValue,
 			mPatternOn,
 			mPatternLength);

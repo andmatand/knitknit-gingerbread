@@ -327,10 +327,11 @@ public class DatabaseHelper {
 		return mDB.insert(COUNTER_TABLE, null, counterValues);
 	}
 
-	public boolean updateCounter(long counterID, int value,
+	public boolean updateCounter(long counterID, String name, int value,
 			boolean patternOn, int patternLength)
 	{
 		ContentValues args = new ContentValues();
+		args.put(COUNTER_KEY_NAME, name);
 		args.put(COUNTER_KEY_VALUE, value);
 		args.put(COUNTER_KEY_PATTERNON, patternOn);
 		args.put(COUNTER_KEY_PATTERNLENGTH, patternLength);

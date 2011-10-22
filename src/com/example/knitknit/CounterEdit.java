@@ -40,8 +40,10 @@ import android.widget.TextView;
 public class CounterEdit extends Activity {
 	private static final String TAG = "bunny-knitknit-CounterEdit";
 	private Counter mCounter;
-
 	private Resources mResources;
+
+	// UI Elements
+	private EditText mNameText;
 	private CheckBox mPatternCheckBox;
 	private EditText mPatternNumber;
 	private TextView mPatternEndText;
@@ -78,10 +80,21 @@ public class CounterEdit extends Activity {
 	private void saveState() {
 		mCounter.setPatternLength(
 			Integer.parseInt(mPatternNumber.getText().toString()));
+
+		mCounter.setName(mNameText.getText().toString());
 	}
 
 	private void setupUI() {
-		// Pattern Checkbox
+		// Find counter name box
+		mNameText = (EditText)
+			findViewById(R.id.counteredit_name_text);
+
+		Log.w(TAG, "mNameText: " + mNameText);
+
+		// Fill name box with counter's name
+		mNameText.append(mCounter.getName());
+
+		// Find pattern checkbox
 		mPatternCheckBox = (CheckBox)
 			findViewById(R.id.counteredit_pattern_checkbox);
 
@@ -106,7 +119,7 @@ public class CounterEdit extends Activity {
 			});
 
 
-		// Pattern Length
+		// Find pattern length number
 		mPatternNumber = (EditText)
 			findViewById(R.id.counteredit_pattern_number);
 
@@ -114,7 +127,7 @@ public class CounterEdit extends Activity {
 		mPatternNumber.append(
 			Integer.toString(mCounter.getPatternLength()));
 
-		// End of pattern text (" rows")
+		// Find end of pattern text (" rows")
 		mPatternEndText = (TextView)
 			findViewById(R.id.counteredit_pattern_endtext);
 

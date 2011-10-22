@@ -5,6 +5,16 @@
 	android:layout_height="match_parent"
 	android:background="@color/counteredit_bg">
 
+	<EditText
+		android:id="@+id/counteredit_name_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="18sp"
+		android:typeface="monospace"
+		android:capitalize="words"
+		android:singleLine="true"
+		android:hint="@string/counteredit_name_hint" />
+
 	<RelativeLayout
 		android:id="@+id/counteredit_pattern"
 		android:layout_width="match_parent"
