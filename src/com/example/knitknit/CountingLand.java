@@ -171,20 +171,24 @@ public class CountingLand extends Activity {
 
 	/* Single Counter functions ******************************************/
 	private void addCounter() {
-		// Save all current counters
-		saveCounters();
+		// Insert a new counter into the table and get its ID
+		long newID = mDatabaseHelper.insertCounter(mProjectID);
 
-		mDatabaseHelper.insertCounter(mProjectID);
+		// Get a cursor over the new counter
+		Cursor counterCursor =
+			mDatabaseHelper.fetchCounter(mProjectID, newID);
 
-		// Reload all counters from database
-		loadCounters();
+		// Add new counter to end of counter object array
+		mCounters.add(new Counter(this, counterCursor));
+		counterCursor.close();
 
 		// Redraw all counters
 		refreshCounters();
 	}
 
 	public void deleteCounter(Counter c) {
-		// Delete counter from database
+		// Tell counter to delete itself from database and delete its
+		// view
 		c.delete();
 
 		// Delete counter object
@@ -241,7 +245,7 @@ public class CountingLand extends Activity {
 
 		// Get a cursor over the list of counters in this project
 		Cursor counterCursor =
-			mDatabaseHelper.fetchCounters(mProjectID);
+			mDatabaseHelper.fetchAllCounters(mProjectID);
 
 		// Loop over each row with the cursor
 		do {

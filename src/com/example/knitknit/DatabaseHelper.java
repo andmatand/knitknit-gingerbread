@@ -158,7 +158,7 @@ public class DatabaseHelper {
 
 	public boolean deleteProject(long projectID) {
 		// Get a cursor over the list of counters in this project
-		Cursor cursor = fetchCounters(projectID);
+		Cursor cursor = fetchAllCounters(projectID);
 
 		// Delete each counter
 		do {
@@ -271,8 +271,8 @@ public class DatabaseHelper {
 			null) > 0;
 	}
 
-	public Cursor fetchCounters(long projectID) throws SQLException {
-		Log.w(TAG, "in fetchCounters");
+	public Cursor fetchAllCounters(long projectID) throws SQLException {
+		Log.w(TAG, "in fetchAllCounters");
 
 		Cursor cursor = mDB.query(
 			true,
@@ -292,6 +292,29 @@ public class DatabaseHelper {
 
 		if (cursor.getCount() == 0) {
 			Log.w(TAG, "counterCursor was empty");
+		}
+
+		return cursor;
+	}
+
+	public Cursor fetchCounter(long projectID, long counterID)
+		throws SQLException
+	{
+		Cursor cursor = mDB.query(
+			true,
+			COUNTER_TABLE,
+			new String[] {
+				COUNTER_KEY_ID,
+				COUNTER_KEY_NAME,
+				COUNTER_KEY_VALUE,
+				COUNTER_KEY_COUNTUP,
+				COUNTER_KEY_PATTERNON,
+				COUNTER_KEY_PATTERNLENGTH},
+			COUNTER_KEY_PROJECTID + "=" + projectID + " and " +
+				COUNTER_KEY_ID + "=" + counterID,
+			null, null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
 		}
 
 		return cursor;
