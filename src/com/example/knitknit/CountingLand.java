@@ -37,6 +37,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -64,6 +65,7 @@ public class CountingLand extends Activity {
 	private static final int MENU_ADD = Menu.FIRST + 10;
 	private static final int MENU_DECREASE = Menu.FIRST + 11;
 	private static final int MENU_RESET = Menu.FIRST + 12;
+	private static final int MENU_SETTINGS = Menu.FIRST + 13;
 
 	// Context menu
 	private static final int MENU_EDIT = Menu.FIRST;
@@ -160,6 +162,19 @@ public class CountingLand extends Activity {
 	private void saveState() {
 		saveCounters();
 		mDatabaseHelper.updateProject(mProjectID, mTotalRows);
+	}
+
+	private void setWindowFlags() {
+		// If the "keep screen on" preference is enabled
+		if (true) {
+			// Add the flag to keep screen on
+			getWindow().addFlags(
+				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		} else {
+			// Clear the flag to keep screen on
+			getWindow().clearFlags(
+				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		}
 	}
 
 	/* Global Display ****************************************************/
@@ -316,6 +331,7 @@ public class CountingLand extends Activity {
 			sizeCounters();
 			refreshCounters();
 		}
+		setWindowFlags();
 	}
 
 	/* Options Menu ******************************************************/
@@ -325,6 +341,7 @@ public class CountingLand extends Activity {
 		menu.add(0, MENU_ADD, 0, R.string.countingland_add);
 		menu.add(0, MENU_DECREASE, 0, R.string.countingland_decrease);
 		menu.add(0, MENU_RESET, 0, R.string.countingland_reset);
+		menu.add(0, MENU_SETTINGS, 0, R.string.countingland_settings);
 		return true;
 	}
 

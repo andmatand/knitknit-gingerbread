@@ -16,4 +16,8 @@
 	<color name="counteredit_bg">#222</color>
 	<color name="counteredit_text">#fffffae0</color>
 	<color name="counteredit_disabled">#666</color>
+
+	<!-- Settings -->
+	<color name="settings_bg">#222</color>
+	<color name="settings_text">#fffffae0</color>
 </resources>
