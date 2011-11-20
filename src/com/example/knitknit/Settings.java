@@ -41,11 +41,6 @@ public class Settings extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 	}
 
-	//@Override
-	//public void onBuildHeaders(List<Header> target) {
-	//	loadHeadersFromResource(R.xml.preference_headers, target);
-	//}
-
 	@Override
 	protected void onPause() {
 		Log.w(TAG, "in onPause");
