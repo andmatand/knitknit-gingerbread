@@ -29,6 +29,7 @@ package com.example.knitknit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,6 +53,7 @@ public class CountingLand extends Activity {
 
 	private Long mProjectID;
 	private int mTotalRows;
+	private SharedPreferences mPrefs;
 
 	private DatabaseHelper mDatabaseHelper;
 	private ArrayList<Counter> mCounters;
@@ -78,6 +80,9 @@ public class CountingLand extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Restore preferences
+		mPrefs = getSharedPreferences(Settings.PREFS_GLOBAL, 0);
 
 		// Open database
 		mDatabaseHelper = new DatabaseHelper(this);
@@ -167,7 +172,7 @@ public class CountingLand extends Activity {
 
 	private void setWindowFlags() {
 		// If the "keep screen on" preference is enabled
-		if (true) {
+		if (mPrefs.getBoolean(Settings.PREF_KEEPSCREENON, false)) {
 			// Add the flag to keep screen on
 			getWindow().addFlags(
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

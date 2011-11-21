@@ -38,26 +38,29 @@ import android.util.Log;
 
 public class Settings extends PreferenceActivity {
 	private static final String TAG = "bunny-knitknit-Settings";
-	private static final String PREF_KEEPSCREENON = "keepScreenOn";
+	public static final String PREFS_GLOBAL = "globalSettings";
+	public static final String PREF_KEEPSCREENON = "keepScreenOn";
+	private SharedPreferences.Editor mPrefEditor;
 	private CheckBoxPreference mKeepScreenOn;
 
 	/* Activity Lifecycle ************************************************/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.w(TAG, "in onCreate");
 
 		addPreferencesFromResource(R.xml.settings);
 
 		// Restore preferences
 		SharedPreferences prefs =
-			PreferenceManager.getDefaultSharedPreferences(this);
+			getSharedPreferences(PREFS_GLOBAL, 0);
+
+		mPrefEditor = prefs.edit();
 
 		// Find preferences and set their default values
 		mKeepScreenOn = (CheckBoxPreference)
 			findPreference("keepScreenOn");
-		mKeepScreenOn.setEnabled(
-			prefs.getBoolean("keepScreenOn", false));
+		mKeepScreenOn.setChecked(
+			prefs.getBoolean(PREF_KEEPSCREENON, true));
 	}
 
 	@Override
@@ -68,5 +71,9 @@ public class Settings extends PreferenceActivity {
 	}
 
 	private void saveState() {
+		mPrefEditor.putBoolean(PREF_KEEPSCREENON,
+		                       mKeepScreenOn.isChecked());
+
+		mPrefEditor.apply();
 	}
 }

@@ -65,11 +65,12 @@ public class ProjectList extends ListActivity {
 		setContentView(R.layout.projectlist);
 
 		// Restore preferences
-		SharedPreferences prefs =
-			PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences prefs = getSharedPreferences(
+			Settings.PREFS_GLOBAL, 0);
 
-		// Set default preferences
-		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+		// Set default preferences (if not already set)
+		PreferenceManager.setDefaultValues(this, Settings.PREFS_GLOBAL,
+		                                   0, R.xml.settings, false);
 
 		// Open database
 		mDatabaseHelper = new DatabaseHelper(this);

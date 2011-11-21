@@ -33,6 +33,6 @@
 <!-- Settings -->
 <string name="settings_label">Settings</string>
 <string name="settings_keepscreenon">Keep screen on</string>
-<string name="settings_keepscreenon_summary">Prevent screen from turning
-	off</string>
+<string name="settings_keepscreenon_summary">Disable timeout on counting
+	screen</string>
 </resources>
