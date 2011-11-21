@@ -31,9 +31,11 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -61,6 +63,13 @@ public class ProjectList extends ListActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.projectlist);
+
+		// Restore preferences
+		SharedPreferences prefs =
+			PreferenceManager.getDefaultSharedPreferences(this);
+
+		// Set default preferences
+		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
 		// Open database
 		mDatabaseHelper = new DatabaseHelper(this);

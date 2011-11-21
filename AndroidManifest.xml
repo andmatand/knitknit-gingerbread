@@ -23,5 +23,9 @@
 			android:label="@string/counteredit_label"
 			android:screenOrientation="portrait">
 		</activity>
+		<activity android:name="Settings"
+			android:label="@string/settings_label"
+			android:screenOrientation="portrait">
+		</activity>
 	</application>
 </manifest> 

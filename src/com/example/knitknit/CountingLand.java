@@ -48,6 +48,7 @@ import java.util.Iterator;
 public class CountingLand extends Activity {
 	private static final String TAG = "bunny-knitknit-CountingLand";
 	private static final int ACTIVITY_EDIT = 1;
+	private static final int ACTIVITY_SETTINGS = 1;
 
 	private Long mProjectID;
 	private int mTotalRows;
@@ -357,6 +358,11 @@ public class CountingLand extends Activity {
 		case MENU_RESET:
 			resetCounters();
 			return true;
+		case MENU_SETTINGS:
+			// Create a new intent to start the Settings
+			// activity
+			Intent i = new Intent(this, Settings.class);
+			startActivity(i);
 		}
 
 		return super.onMenuItemSelected(featureID, item);
@@ -409,17 +415,9 @@ public class CountingLand extends Activity {
 		switch(item.getItemId()) {
 		case MENU_EDIT:
 			// Create a new intent to start the CounterEdit
-			// activity, attaching the selected counter object
+			// activity
 			Intent i = new Intent(this, CounterEdit.class);
-			/*
-			i.putExtra(Counter.COUNTER_KEY_ID,
-				mSelectedCounter.getID());
-				*/
-
-			Log.w(TAG, "counter stored: " +
-				mSelectedCounter.getID());
-
-			startActivityForResult(i, ACTIVITY_EDIT);
+			startActivity(i);
 			return true;
 		case MENU_COUNTER_INCREASE:
 			mSelectedCounter.increment();

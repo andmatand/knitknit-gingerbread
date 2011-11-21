@@ -29,4 +29,10 @@
 <!-- CounterEdit -->
 <string name="counteredit_label">Edit Counter</string>
 <string name="counteredit_name_hint">Name</string>
+
+<!-- Settings -->
+<string name="settings_label">Settings</string>
+<string name="settings_keepscreenon">Keep screen on</string>
+<string name="settings_keepscreenon_summary">Prevent screen from turning
+	off</string>
 </resources>

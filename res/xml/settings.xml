@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="Display">
-		<CheckboxPreference
-			android:title="Keep screen on"
-			android:summary="This is a summary"
-			/>
+		<CheckBoxPreference
+			android:title="@string/settings_keepscreenon"
+			android:defaultValue="false"
+			android:summary="@string/settings_keepscreenon_summary"
+			android:key="keepScreenOn" />
 	</PreferenceCategory>
 </PreferenceScreen>
