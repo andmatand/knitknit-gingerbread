@@ -351,11 +351,13 @@ public class DatabaseHelper {
 	}
 
 	public boolean updateCounter(long counterID, String name, int value,
-	                             boolean patternOn, int patternLength)
+	                             boolean countUp, boolean patternOn,
+	                             int patternLength)
 	{
 		ContentValues vals = new ContentValues();
 		vals.put(COUNTER_KEY_NAME, name);
 		vals.put(COUNTER_KEY_VALUE, value);
+		vals.put(COUNTER_KEY_COUNTUP, countUp);
 		vals.put(COUNTER_KEY_PATTERNON, patternOn);
 		vals.put(COUNTER_KEY_PATTERNLENGTH, patternLength);
 

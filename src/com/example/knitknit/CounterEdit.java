@@ -32,9 +32,12 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class CounterEdit extends Activity {
@@ -44,6 +47,8 @@ public class CounterEdit extends Activity {
 
 	// UI Elements
 	private EditText mNameText;
+	private RadioButton mUpdownUp;
+	private RadioButton mUpdownDown;
 	private CheckBox mPatternCheckBox;
 	private EditText mPatternNumber;
 	private TextView mPatternEndText;
@@ -93,6 +98,41 @@ public class CounterEdit extends Activity {
 
 		// Fill name box with counter's name
 		mNameText.append(mCounter.getName());
+
+
+		// Create an OnClickListener for the updown radio buttons
+		OnClickListener updown_listener = new OnClickListener() {
+		    public void onClick(View v) {
+			Log.w(TAG, "clicked radiobutton");
+
+			RadioButton rb = (RadioButton) v;
+			if (rb.getId() == R.id.counteredit_updown_up) {
+				Log.w(TAG, "clicked UP");
+				mCounter.setCountUp(true);
+			} else {
+				Log.w(TAG, "clicked DOWN");
+				mCounter.setCountUp(false);
+			}
+		    }
+		};
+
+		// Find updown RadioButtons
+		mUpdownUp = (RadioButton)
+			findViewById(R.id.counteredit_updown_up);
+		mUpdownDown = (RadioButton)
+			findViewById(R.id.counteredit_updown_down);
+
+		// Attach OnClickListeners
+		mUpdownUp.setOnClickListener(updown_listener);
+		mUpdownDown.setOnClickListener(updown_listener);
+
+		// Select the correct radiobutton based on the current setting
+		if (mCounter.getCountUp()) {
+			mUpdownUp.setChecked(true);
+		} else {
+			mUpdownDown.setChecked(true);
+		}
+
 
 		// Find pattern checkbox
 		mPatternCheckBox = (CheckBox)

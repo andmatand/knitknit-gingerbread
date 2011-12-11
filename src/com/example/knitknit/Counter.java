@@ -102,6 +102,14 @@ public class Counter {
 	}
 
 	/* Simple Accessor methods *******************************************/
+	public boolean getCountUp() {
+		return mCountUp;
+	}
+
+	public int getDisplayValue() {
+		return (CountingLand.getZeroMode() ? mValue : mValue + 1);
+	}
+
 	public int getHeight() {
 		return mView.getHeight();
 	}
@@ -130,10 +138,6 @@ public class Counter {
 		return mValue;
 	}
 
-	public int getDisplayValue() {
-		return (CountingLand.getZeroMode() ? mValue : mValue + 1);
-	}
-
 	public int getY() {
 		// Create an array of two integers
 		int[] xy = new int[2];
@@ -143,6 +147,10 @@ public class Counter {
 
 		// Return the y coordinate
 		return xy[1];
+	}
+
+	public void setCountUp(boolean upDown) {
+		mCountUp = upDown;
 	}
 
 	public void setName(String name) {
@@ -262,6 +270,7 @@ public class Counter {
 			mID,
 			mName,
 			mValue,
+			mCountUp,
 			mPatternOn,
 			mPatternLength);
 	}

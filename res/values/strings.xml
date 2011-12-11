@@ -29,6 +29,9 @@
 <!-- CounterEdit -->
 <string name="counteredit_label">Edit Counter</string>
 <string name="counteredit_name_hint">Name</string>
+<string name="counteredit_updown_text">Count</string>
+<string name="counteredit_updown_up">up</string>
+<string name="counteredit_updown_down">down</string>
 
 <!-- Settings -->
 <string name="settings_label">Settings</string>

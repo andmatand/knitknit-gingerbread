@@ -16,6 +16,42 @@
 		android:hint="@string/counteredit_name_hint" />
 
 	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<TextView
+			android:id="@+id/counteredit_updown_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:layout_marginRight="6sp"
+			android:textSize="18sp"
+			android:textColor="@color/counteredit_text"
+			android:text="@string/counteredit_updown_text" />
+		<RadioGroup
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf= "@id/counteredit_updown_text"
+			android:orientation="horizontal">
+			<RadioButton
+				android:id="@+id/counteredit_updown_up"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="6sp"
+				android:textSize="18sp"
+				android:textColor="@color/counteredit_text"
+				android:text="@string/counteredit_updown_up" />
+			<RadioButton
+				android:id="@+id/counteredit_updown_down"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="18sp"
+				android:textColor="@color/counteredit_text"
+				android:text="@string/counteredit_updown_down"
+				/>
+		</RadioGroup>
+	</RelativeLayout>
+
+	<RelativeLayout
 		android:id="@+id/counteredit_pattern"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
