@@ -60,9 +60,10 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerVertical="true"
+			android:layout_marginRight="6sp"
 			android:textSize="18sp"
 			android:textColor="@color/counteredit_text"
-			android:text="Pattern repeats every " />
+			android:text="@string/counteredit_pattern_checkbox" />
 		<EditText
 			android:id="@+id/counteredit_pattern_number"
 			android:layout_width="wrap_content"
@@ -82,8 +83,9 @@
 			android:layout_centerVertical="true"
 			android:layout_toRightOf=
 				"@id/counteredit_pattern_number"
+			android:layout_marginLeft="6sp"
 			android:textSize="18sp"
 			android:textColor="@color/counteredit_text"
-			android:text=" rows" />
+			android:text="@string/counteredit_pattern_endtext" />
 	</RelativeLayout>
 </LinearLayout>

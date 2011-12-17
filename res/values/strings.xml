@@ -32,6 +32,8 @@
 <string name="counteredit_updown_text">Count</string>
 <string name="counteredit_updown_up">up</string>
 <string name="counteredit_updown_down">down</string>
+<string name="counteredit_pattern_checkbox">Pattern repeats every</string>
+<string name="counteredit_pattern_endtext">rows</string>
 
 <!-- Settings -->
 <string name="settings_label">Settings</string>
