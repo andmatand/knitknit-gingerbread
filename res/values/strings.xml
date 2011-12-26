@@ -19,6 +19,7 @@
 <string name="countingland_reset">Reset</string>
 <string name="countingland_settings">Settings</string>
 <string name="countingland_total">Total:</string>
+<string name="countingland_numrepeats">Repeats:</string>
 
 <!-- Counter -->
 <string name="counter_edit">Edit</string>

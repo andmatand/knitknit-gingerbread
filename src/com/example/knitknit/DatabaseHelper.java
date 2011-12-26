@@ -41,7 +41,7 @@ import java.util.Date;
 public class DatabaseHelper {
 	private static final String TAG = "bunny-knitknit-DatabaseHelper";
 	private static final String DATABASE_NAME = "knitknit.db";
-	private static final int DATABASE_VERSION = 8;
+	private static final int DATABASE_VERSION = 11;
 
 	private static final String PROJECT_TABLE = "projects";
 	public static final String PROJECT_KEY_ID = "_id";
@@ -58,6 +58,7 @@ public class DatabaseHelper {
 	public static final String COUNTER_KEY_COUNTUP = "countUp";
 	public static final String COUNTER_KEY_PATTERNON = "patternOn";
 	public static final String COUNTER_KEY_PATTERNLENGTH = "patternLength";
+	public static final String COUNTER_KEY_NUMREPEATS = "numRepeats";
 
 	private static final String SETTINGS_TABLE = "settings";
 	public static final String SETTINGS_KEY_ID = "_id";
@@ -106,25 +107,12 @@ public class DatabaseHelper {
 					"default 0, " +
 				COUNTER_KEY_PATTERNLENGTH + " integer " +
 					"not null default 10, " +
+				COUNTER_KEY_NUMREPEATS + " integer " +
+					"not null default 0, " +
 				"targetEnabled bool not null default 0, " +
 				"targetRows integer null);");
 			
 			// Create notes table
-
-			// Create settings table
-			db.execSQL(
-				"create table " + SETTINGS_TABLE +
-				"(" + SETTINGS_KEY_ID + " integer " +
-					"primary key, " +
-				SETTINGS_KEY_KEEPSCREEENON + " bool not null " +
-					"default 0, " +
-				SETTINGS_KEY_SHOWCOUNTERNAMES + " bool " +
-					"not null default 0);");
-
-			// Insert the sole row into the settings table
-			ContentValues vals = new ContentValues();
-			vals.put(SETTINGS_KEY_ID, 0);
-			db.insert(SETTINGS_TABLE, null, vals);
 		}
 
 		@Override
@@ -306,7 +294,8 @@ public class DatabaseHelper {
 				COUNTER_KEY_VALUE,
 				COUNTER_KEY_COUNTUP,
 				COUNTER_KEY_PATTERNON,
-				COUNTER_KEY_PATTERNLENGTH},
+				COUNTER_KEY_PATTERNLENGTH,
+				COUNTER_KEY_NUMREPEATS},
 			COUNTER_KEY_PROJECTID + "=" + projectID,
 			null, null, null, null, null);
 		if (cursor != null) {
@@ -332,7 +321,8 @@ public class DatabaseHelper {
 				COUNTER_KEY_VALUE,
 				COUNTER_KEY_COUNTUP,
 				COUNTER_KEY_PATTERNON,
-				COUNTER_KEY_PATTERNLENGTH},
+				COUNTER_KEY_PATTERNLENGTH,
+				COUNTER_KEY_NUMREPEATS},
 			COUNTER_KEY_PROJECTID + "=" + projectID + " and " +
 				COUNTER_KEY_ID + "=" + counterID,
 			null, null, null, null, null);
@@ -352,7 +342,7 @@ public class DatabaseHelper {
 
 	public boolean updateCounter(long counterID, String name, int value,
 	                             boolean countUp, boolean patternOn,
-	                             int patternLength)
+	                             int patternLength, int numRepeats)
 	{
 		ContentValues vals = new ContentValues();
 		vals.put(COUNTER_KEY_NAME, name);
@@ -360,23 +350,12 @@ public class DatabaseHelper {
 		vals.put(COUNTER_KEY_COUNTUP, countUp);
 		vals.put(COUNTER_KEY_PATTERNON, patternOn);
 		vals.put(COUNTER_KEY_PATTERNLENGTH, patternLength);
+		vals.put(COUNTER_KEY_NUMREPEATS, numRepeats);
 
 		return mDB.update(
 			COUNTER_TABLE,
 			vals,
 			COUNTER_KEY_ID + "=" + counterID,
 			null) > 0;
-	}
-
-	/* Settings ***********************************************************/
-	public boolean updateSettings(boolean keepScreenOn,
-	                             boolean showCounterNames)
-	{
-		ContentValues vals = new ContentValues();
-		vals.put(SETTINGS_KEY_KEEPSCREEENON, keepScreenOn);
-		vals.put(SETTINGS_KEY_SHOWCOUNTERNAMES, showCounterNames);
-
-		return mDB.update(SETTINGS_TABLE, vals,
-		                  SETTINGS_KEY_ID + "=0", null) > 0;
 	}
 }

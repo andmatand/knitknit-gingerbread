@@ -60,6 +60,7 @@ public class CountingLand extends Activity {
 	private CountingLandWrapper mWrapper;
 	private LinearLayout mCounterWrapper;
 	private TextView mTotalRowsView;
+	private TextView mNumRepeatsView;
 
 	// The counter whose context menu is open
 	public static Counter mSelectedCounter;
@@ -133,6 +134,11 @@ public class CountingLand extends Activity {
 		mTotalRowsView =
 			(TextView) findViewById(
 				R.id.countingland_totalrows);
+
+		// Find numRepeats view
+		mNumRepeatsView =
+			(TextView) findViewById(
+				R.id.countingland_numrepeats);
 	}
 
 	@Override
@@ -185,9 +191,23 @@ public class CountingLand extends Activity {
 
 	/* Global Display ****************************************************/
 	private void refreshTotal() {
-		String label = getString(R.string.countingland_total);
-		mTotalRowsView.setText(label + " " + Integer.toString(
+		String totalLabel = getString(R.string.countingland_total);
+		mTotalRowsView.setText(totalLabel + " " + Integer.toString(
 			getZeroMode() ? mTotalRows : mTotalRows + 1));
+
+		// If there is only one counter, update its numRepeats in top
+		// display
+		if (mCounters.size() == 1) {
+			mNumRepeatsView.setVisibility(View.VISIBLE);
+
+			String repeatsLabel = getString(
+				R.string.countingland_numrepeats);
+			mNumRepeatsView.setText(repeatsLabel + " " +
+				Integer.toString(
+					mCounters.get(0).getNumRepeats()));
+		} else {
+			mNumRepeatsView.setVisibility(View.GONE);
+		}
 	}
 
 	/* Single Counter functions ******************************************/
@@ -204,6 +224,7 @@ public class CountingLand extends Activity {
 		counterCursor.close();
 
 		// Redraw all counters
+		sizeCounters();
 		refreshCounters();
 	}
 
@@ -285,6 +306,7 @@ public class CountingLand extends Activity {
 	}
 
 	private void fillData() {
+		Log.w(TAG, "in fillData()");
 		// Set activity title to project name
 		getWindow().setTitle(
 			mDatabaseHelper.getProjectName(mProjectID));
@@ -292,7 +314,7 @@ public class CountingLand extends Activity {
 		// Update total rows display
 		refreshTotal();
 
-		refreshCounters();
+		//refreshCounters();
 	}
 
 	// Adds (or subtracts, depending on counter setting) to all counters
@@ -319,24 +341,56 @@ public class CountingLand extends Activity {
 	}
 
 	private void sizeCounters() {
+		Log.w(TAG, "in sizeCounters()");
 		// Set the text size of the counters based on the available
 		// height divided by the number of counters
 		int counterSize =
 			(int) ((mWrapper.getHeight() / mCounters.size()) * .5);
 		Log.w(TAG, "counterSize: " + counterSize);
+
+		// Set the right padding
+		int rightPadding;
+		if (mCounters.size() > 1) {
+			rightPadding = mWrapper.getWidth() -
+				(int) (counterSize * 2.3);
+		} else {
+			rightPadding = 0;
+		}
+		mCounterWrapper.setPadding(0, 0, rightPadding, 0);
+		Log.w(TAG, "set padding to " + rightPadding);
+
+		mCounterWrapper.removeAllViews();
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
+			//c.removeView();
+
 			c.setSize(counterSize);
+
+			// If there are multiple counters
+			if (mCounters.size() > 1) {
+				c.setSingleMode(false);
+				// If showing numRepeats is enabled, show
+				// repeats
+				c.setShowRepeats(true);
+			} else {
+				c.setSingleMode(true);
+			}
+
+			c.addView();
 		}
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
+		Log.w(TAG, "in onWindowFocusChanged()");
 		super.onWindowFocusChanged(hasFocus);
 		if (hasFocus) {
+			Log.w(TAG, "window has focus");
+			mCounterWrapper.invalidate();
 			sizeCounters();
 			refreshCounters();
-		}
+			refreshTotal();
+		} else Log.w(TAG, "window does not have focus");
 		setWindowFlags();
 	}
 
@@ -439,9 +493,7 @@ public class CountingLand extends Activity {
 	}
 
 	public void refreshCounters() {
-		// Put counterwrapper in front of the background image
-		//mCounterWrapper.bringToFront();
-
+		Log.w(TAG, "in refreshCounters()");
 		// Deselect the currently selected counter
 		mSelectedCounter = null;
 
@@ -456,7 +508,7 @@ public class CountingLand extends Activity {
 		// Reset all counters to 0
 		for (Iterator it = mCounters.iterator(); it.hasNext(); ) {
 			Counter c = (Counter) it.next();
-			c.setValue(0);
+			c.reset();
 		}
 		
 		// Also reset row-total

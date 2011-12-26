@@ -32,8 +32,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.widget.LinearLayout;
+//import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -45,10 +47,16 @@ public class Counter {
 	private boolean mCountUp;
 	private boolean mPatternOn;
 	private int mPatternLength;
+	private int mNumRepeats;
+	private boolean mShowRepeats;
 
-	private TextView mView;
+	private LinearLayout mParentView;
+	private LinearLayout mView;
+	private TextView mValueView;
+	private TextView mRepeatsView;
 	private Resources mResources;
 	private boolean mPressed = false;
+	private boolean mSingleMode; // true if this is the only counter
 	private DatabaseHelper mDatabaseHelper;
 
 	Counter(Context context, Cursor cursor) {
@@ -68,14 +76,18 @@ public class Counter {
 			> 0;
 		mPatternLength = cursor.getInt(cursor.getColumnIndexOrThrow(
 			DatabaseHelper.COUNTER_KEY_PATTERNLENGTH));
+		mNumRepeats = cursor.getInt(cursor.getColumnIndexOrThrow(
+			DatabaseHelper.COUNTER_KEY_NUMREPEATS));
 
-		// Inflate a new TextView based on the template layout
+		// Inflate a new RelativeLayout based on the template layout
 		LayoutInflater inflater =
 			(LayoutInflater) context.getSystemService(
 				Context.LAYOUT_INFLATER_SERVICE);
 		mView =
-			(TextView) inflater.inflate(
+			(LinearLayout) inflater.inflate(
 				R.layout.countingland_counter, null, false);
+		mValueView = (TextView) mView.getChildAt(0);
+		mRepeatsView = (TextView) mView.getChildAt(1);
 
 		// Register the view for a context menu
 		((Activity) context).registerForContextMenu(mView);
@@ -89,17 +101,18 @@ public class Counter {
 		refresh();
 
 		// Find the parent view
-		LinearLayout parentView =
-			(LinearLayout) ((Activity) context).findViewById(
+		mParentView = (LinearLayout)
+			((Activity) context).findViewById(
 				R.id.countingland_counterwrapper);
 
-		// Add this view to the parent view
-		parentView.addView(mView);
+		// Add the view to the parent
+		//addView();
 
 		// Open database
 		mDatabaseHelper = new DatabaseHelper(context);
 		mDatabaseHelper.open();
 	}
+
 
 	/* Simple Accessor methods *******************************************/
 	public boolean getCountUp() {
@@ -124,6 +137,10 @@ public class Counter {
 
 	public String getName() {
 		return mName;
+	}
+
+	public int getNumRepeats() {
+		return mNumRepeats;
 	}
 
 	public int getPatternLength() {
@@ -165,8 +182,13 @@ public class Counter {
 		mPatternOn = onOff;
 	}
 
+	public void setSingleMode(boolean onOff) {
+		mSingleMode = onOff;
+		if (onOff) mShowRepeats = false;
+	}
+
 	public void setSize(int size) {
-		mView.setTextSize(size);
+		mValueView.setTextSize(size);
 	}
 
 	public void setValue(int value) {
@@ -174,12 +196,18 @@ public class Counter {
 	}
 
 	/* Other Methods *****************************************************/
+	public void addView() {
+		// Add this view to the parent view
+		mParentView.addView(mView);
+	}
+
 	public void increment() {
 		// Add or subtract 1, depending on countUp setting
 		if (mCountUp) {
 			mValue++;
 			if (mPatternOn) {
 				if (mValue > mPatternLength - 1) {
+					mNumRepeats++;
 					mValue = 0;
 				}
 			}
@@ -187,6 +215,7 @@ public class Counter {
 			mValue--;
 			if (mPatternOn) {
 				if (mValue < 0) {
+					mNumRepeats++;
 					mValue = mPatternLength - 1;
 				}
 			}
@@ -201,6 +230,7 @@ public class Counter {
 			mValue--;
 			if (mPatternOn) {
 				if (mValue < 0) {
+					mNumRepeats--;
 					mValue = mPatternLength - 1;
 				}
 			}
@@ -208,6 +238,7 @@ public class Counter {
 			mValue++;
 			if (mPatternOn) {
 				if (mValue > mPatternLength - 1) {
+					mNumRepeats--;
 					mValue = 0;
 				}
 			}
@@ -236,10 +267,8 @@ public class Counter {
 		// of the timer thread
 		mView.post(new Runnable() {
 			public void run() {
-				// mView.setPressed(true);
-
 				// Set the color
-				mView.setTextColor(
+				mValueView.setTextColor(
 				mResources.getColor(R.color.counter_pressed));
 			}
 		});
@@ -254,14 +283,55 @@ public class Counter {
 			public void run() {
 				// Update the TextView with the counter's
 				// current value
-				mView.setText(String.valueOf(
+				mValueView.setText(String.valueOf(
 					getDisplayValue()));
 
 				// Set the color
-				mView.setTextColor(
+				mValueView.setTextColor(
 					mResources.getColor(R.color.counter));
+				
+				// If this is the only counter
+				if (mSingleMode) {
+					// Center it
+					mValueView.setGravity(Gravity.CENTER);
+				} else {
+					// Otherwise right align
+					mValueView.setGravity(Gravity.RIGHT);
+				}
+
+				if (mShowRepeats) {
+					Log.w(TAG, "set repeats to VISIBLE");
+					// Show numRepeats
+					mRepeatsView.setVisibility(
+						View.VISIBLE);
+
+					// Update the TextView with the
+					// counter's current value
+					mRepeatsView.setText(
+						String.format("%1$-3s",
+						String.valueOf(mNumRepeats)));
+
+				} else {
+					Log.w(TAG, "set repeats to GONE");
+					// Hide numRepeats
+					mRepeatsView.setVisibility(View.GONE);
+				}
 			}
 		});
+	}
+
+	public void removeView() {
+		//((LinearLayout) mView.getParent()).removeView(mView);
+		mParentView.removeView(mView);
+	}
+
+	public void reset() {
+		if (mCountUp) {
+			mValue = 0;
+		} else {
+			mValue = mPatternLength - 1;
+		}
+		mNumRepeats = 0;
 	}
 
 	public void saveState() {
@@ -272,7 +342,12 @@ public class Counter {
 			mValue,
 			mCountUp,
 			mPatternOn,
-			mPatternLength);
+			mPatternLength,
+			mNumRepeats);
+	}
+
+	public void setShowRepeats(boolean visible) {
+		mShowRepeats = visible;
 	}
 
 	public void delete() {
@@ -280,6 +355,6 @@ public class Counter {
 		mDatabaseHelper.deleteCounter(mID);
 
 		// Delete the view
-		((LinearLayout) mView.getParent()).removeView(mView);
+		removeView();
 	}
 }
