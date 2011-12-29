@@ -6,5 +6,9 @@
 			android:defaultValue="false"
 			android:summary="@string/settings_keepscreenon_summary"
 			android:key="keepScreenOn" />
+		<CheckBoxPreference
+			android:title="@string/settings_shownumrepeats"
+			android:defaultValue="false"
+			android:key="showNumRepeats" />
 	</PreferenceCategory>
 </PreferenceScreen>

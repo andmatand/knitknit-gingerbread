@@ -195,9 +195,11 @@ public class CountingLand extends Activity {
 		mTotalRowsView.setText(totalLabel + " " + Integer.toString(
 			getZeroMode() ? mTotalRows : mTotalRows + 1));
 
-		// If there is only one counter, update its numRepeats in top
-		// display
-		if (mCounters.size() == 1) {
+		// If there is only one counter, and the showNumRepeats
+		// preference is enabled, update the text in the top display
+		if (mCounters.size() == 1 &&
+		    mPrefs.getBoolean(Settings.PREF_SHOWNUMREPEATS, false))
+		{
 			mNumRepeatsView.setVisibility(View.VISIBLE);
 
 			String repeatsLabel = getString(
@@ -350,11 +352,13 @@ public class CountingLand extends Activity {
 
 		// Set the right padding
 		int rightPadding;
-		if (mCounters.size() > 1) {
+		if (mCounters.size() == 1 ||
+		    !mPrefs.getBoolean(Settings.PREF_SHOWNUMREPEATS, false))
+		{
+			rightPadding = 0;
+		} else {
 			rightPadding = mWrapper.getWidth() -
 				(int) (counterSize * 2.3);
-		} else {
-			rightPadding = 0;
 		}
 		mCounterWrapper.setPadding(0, 0, rightPadding, 0);
 		Log.w(TAG, "set padding to " + rightPadding);
@@ -369,9 +373,10 @@ public class CountingLand extends Activity {
 			// If there are multiple counters
 			if (mCounters.size() > 1) {
 				c.setSingleMode(false);
-				// If showing numRepeats is enabled, show
-				// repeats
-				c.setShowRepeats(true);
+
+				// Set showing numRepeats based on prference
+				c.setShowNumRepeats(mPrefs.getBoolean(
+					Settings.PREF_SHOWNUMREPEATS, false));
 			} else {
 				c.setSingleMode(true);
 			}

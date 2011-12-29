@@ -39,6 +39,7 @@
 <!-- Settings -->
 <string name="settings_label">Settings</string>
 <string name="settings_keepscreenon">Keep screen on</string>
-<string name="settings_keepscreenon_summary">Disable timeout on counting
-	screen</string>
+<string name="settings_keepscreenon_summary">Prevent screen from
+	locking</string>
+<string name="settings_shownumrepeats">Show number of repeats</string>
 </resources>

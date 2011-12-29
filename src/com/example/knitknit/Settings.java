@@ -40,8 +40,10 @@ public class Settings extends PreferenceActivity {
 	private static final String TAG = "bunny-knitknit-Settings";
 	public static final String PREFS_GLOBAL = "globalSettings";
 	public static final String PREF_KEEPSCREENON = "keepScreenOn";
+	public static final String PREF_SHOWNUMREPEATS = "showNumRepeats";
 	private SharedPreferences.Editor mPrefEditor;
 	private CheckBoxPreference mKeepScreenOn;
+	private CheckBoxPreference mShowNumRepeats;
 
 	/* Activity Lifecycle ************************************************/
 	@Override
@@ -60,7 +62,11 @@ public class Settings extends PreferenceActivity {
 		mKeepScreenOn = (CheckBoxPreference)
 			findPreference("keepScreenOn");
 		mKeepScreenOn.setChecked(
-			prefs.getBoolean(PREF_KEEPSCREENON, true));
+			prefs.getBoolean(PREF_KEEPSCREENON, false));
+		mShowNumRepeats = (CheckBoxPreference)
+			findPreference("showNumRepeats");
+		mShowNumRepeats.setChecked(
+			prefs.getBoolean(PREF_SHOWNUMREPEATS, false));
 	}
 
 	@Override
@@ -73,6 +79,8 @@ public class Settings extends PreferenceActivity {
 	private void saveState() {
 		mPrefEditor.putBoolean(PREF_KEEPSCREENON,
 		                       mKeepScreenOn.isChecked());
+		mPrefEditor.putBoolean(PREF_SHOWNUMREPEATS,
+		                       mShowNumRepeats.isChecked());
 
 		mPrefEditor.apply();
 	}

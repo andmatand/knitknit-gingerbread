@@ -38,6 +38,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 
 public class Counter {
 	private static final String TAG = "bunny-knitknit-Counter";
@@ -189,6 +190,7 @@ public class Counter {
 
 	public void setSize(int size) {
 		mValueView.setTextSize(size);
+		mRepeatsView.setTextSize((int) (size * .35));
 	}
 
 	public void setValue(int value) {
@@ -197,7 +199,22 @@ public class Counter {
 
 	/* Other Methods *****************************************************/
 	public void addView() {
+		/*
+		LinearLayout.LayoutParams params;
+		
+		if (mShowRepeats) {
+			params = new LinearLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
+		} else {
+			params = new LinearLayout.LayoutParams(
+				LayoutParams.MATCH_PARENT,
+				LayoutParams.WRAP_CONTENT);
+		}
+		*/
+
 		// Add this view to the parent view
+		//mParentView.addView(mView, params);
 		mParentView.addView(mView);
 	}
 
@@ -290,32 +307,34 @@ public class Counter {
 				mValueView.setTextColor(
 					mResources.getColor(R.color.counter));
 				
-				// If this is the only counter
-				if (mSingleMode) {
-					// Center it
-					mValueView.setGravity(Gravity.CENTER);
-				} else {
-					// Otherwise right align
-					mValueView.setGravity(Gravity.RIGHT);
-				}
-
 				if (mShowRepeats) {
 					Log.w(TAG, "set repeats to VISIBLE");
 					// Show numRepeats
 					mRepeatsView.setVisibility(
 						View.VISIBLE);
 
+					// Right align the text
+					mValueView.setGravity(Gravity.RIGHT);
+
 					// Update the TextView with the
 					// counter's current value
-					mRepeatsView.setText(
-						String.format("%1$-3s",
-						String.valueOf(mNumRepeats)));
+					mRepeatsView.setText(String.format(
+						"%1$-3s",
+						mPatternOn ?
+							String.valueOf(
+							mNumRepeats) : ""));
 
 				} else {
 					Log.w(TAG, "set repeats to GONE");
 					// Hide numRepeats
-					mRepeatsView.setVisibility(View.GONE);
+					mRepeatsView.setVisibility(
+						View.GONE);
+
+					// Center the text
+					mValueView.setGravity(Gravity.CENTER);
 				}
+				// TEST: trying to fix ICS layout bug
+				//mParentView.forcelayout();
 			}
 		});
 	}
@@ -346,7 +365,7 @@ public class Counter {
 			mNumRepeats);
 	}
 
-	public void setShowRepeats(boolean visible) {
+	public void setShowNumRepeats(boolean visible) {
 		mShowRepeats = visible;
 	}
 
